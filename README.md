@@ -1,43 +1,52 @@
-**GKE + FluxCD + GitHub Actions + Helm (kbot demo)**
+# GKE + FluxCD + GitHub Actions + Helm (kbot demo)
 
 Цей проект демонструє повний GitOps-процес: розгортання кластеру GKE через Terraform, встановлення FluxCD, налаштування GitRepository та HelmRelease для PET-проєкту kbot, а також автоматичне оновлення контейнерного образу через GitHub Actions.
 
 ---
 
-**Розгортання кластера та Flux через Terraform**
+## Розгортання кластера та Flux через Terraform
 
 1. Клонуйте репозиторій:
-
+```bash
 git clone git@github.com:your-org/your-repo.git
 cd your-repo
 Створіть файли змінних:
 
 vars.tfvars
 
+hcl
+Копировать код
 GOOGLE_PROJECT = "my-gcp-project"
 GOOGLE_REGION  = "us-central1"
 GKE_NUM_NODES  = 3
 GITHUB_OWNER   = "your-github-username"
 secrets.tfvars
 
-
+hcl
+Копировать код
 GITHUB_TOKEN = "ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
 ⚠️ GitHub Token повинен мати права: repo та admin:public_key.
 
 Ініціалізація Terraform:
 
+bash
+Копировать код
 terraform init -upgrade
 Перевірка плану:
 
+bash
+Копировать код
 terraform plan -var-file="vars.tfvars" -var-file="secrets.tfvars"
 Застосування конфігурації:
 
-
+bash
+Копировать код
 terraform apply -var-file="vars.tfvars" -var-file="secrets.tfvars"
 HelmRelease для kbot
-
 Файл: charts/kbot/kbot-helmrelease.yaml
 
+yaml
+Копировать код
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -70,9 +79,10 @@ spec:
 Flux автоматично застосує цей HelmRelease у кластері після пушу змін у Git.
 
 CI/CD через GitHub Actions
-
 Файл: .github/workflows/docker-helm.yml
 
+yaml
+Копировать код
 name: Build & Deploy kbot
 
 on:
@@ -104,7 +114,6 @@ jobs:
           git commit -m "Update Docker image tag to latest [skip ci]" || echo "No changes to commit"
           git push origin main
 Secrets у GitHub
-
 У репозиторії → Settings → Secrets and variables → Actions додайте:
 
 DOCKER_USERNAME — логін Docker Hub
@@ -112,8 +121,8 @@ DOCKER_USERNAME — логін Docker Hub
 DOCKER_PASSWORD — пароль/токен Docker Hub
 
 Перевірка
-
-
+bash
+Копировать код
 # Статус Flux
 kubectl get pods -n flux-system
 
@@ -125,13 +134,13 @@ kubectl describe hr kbot -n default
 Pod-и мають перезапускатись з оновленим образом.
 
 Outputs Terraform
-
-
+bash
+Копировать код
 terraform output
 Приклад:
 
 ini
-
+Копировать код
 gke_cluster_name     = "example-cluster"
 gke_cluster_endpoint = "XX.XX.XX.XX"
 flux_repo_https_url  = "https://github.com/your-org/gke-flux-gitops.git"
@@ -140,7 +149,6 @@ flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
 ⚠️ Приватний ключ у виводі позначений як sensitive і не показується.
 
 Результат
-
 Розгорнутий кластер GKE
 
 Встановлений Flux
@@ -148,7 +156,6 @@ flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
 Налаштований GitRepository та HelmRelease для kbot
 
 Зміни в коді → GitHub Actions → новий Docker-образ → Flux автоматично оновлює застосунок у Kubernetes 🚀
-
 
 
 
