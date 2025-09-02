@@ -46,15 +46,18 @@ hcl
 GITHUB_TOKEN = "ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
 ⚠️ Token GitHub має мати права: repo та admin:public_key.
 
-1. Ініціалізація Terraform
+Ініціалізація Terraform:
+
 bash
 Копировать код
 terraform init -upgrade
-2. Перевірка плану
+Перевірка плану:
+
 bash
 Копировать код
 terraform plan -var-file="vars.tfvars" -var-file="secrets.tfvars"
-3. Застосування конфігурації
+Застосування конфігурації:
+
 bash
 Копировать код
 terraform apply -var-file="vars.tfvars" -var-file="secrets.tfvars"
@@ -142,7 +145,7 @@ jobs:
           git commit -m "Update Docker image tag to latest [skip ci]" || echo "No changes to commit"
           git push origin main
 🔹 Secrets у GitHub
-У налаштуваннях репозиторію → Settings → Secrets and variables → Actions додайте:
+У репозиторії → Settings → Secrets and variables → Actions додайте:
 
 DOCKER_USERNAME — логін Docker Hub
 
@@ -177,8 +180,6 @@ flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
 ⚠️ Приватний ключ у виводі позначений як sensitive і не показується.
 
 ✅ Результат
-Успішним тестом вважається:
-
 Розгорнутий кластер GKE
 
 Встановлений Flux
@@ -186,6 +187,9 @@ flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
 Налаштований GitRepository та HelmRelease для kbot
 
 Зміни в коді → GitHub Actions → новий Docker-образ → Flux автоматично оновлює застосунок у Kubernetes 🚀
+
+yaml
+Копировать код
 
 
 
