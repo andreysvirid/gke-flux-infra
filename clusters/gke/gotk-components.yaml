@@ -1,0 +1,28 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: kbot-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: https://github.com/andreysvirid/kbot
+  ref:
+    branch: main
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kbot
+  namespace: default
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./charts/kbot
+      sourceRef:
+        kind: GitRepository
+        name: kbot-repo
+  values:
+    image:
+      repository: your-dockerhub/kbot
+      tag: "1.0.0"

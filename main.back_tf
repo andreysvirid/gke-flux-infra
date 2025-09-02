@@ -1,0 +1,24 @@
+provider "google" {
+  project = var.GOOGLE_PROJECT  # ID проекта Google Cloud
+  region  = var.GOOGLE_REGION   # Регион для GKE кластера
+}
+
+resource "google_container_cluster" "this" {
+  name     = "example-cluster"        # Имя кластера
+  location = var.GOOGLE_REGION        # Регион для кластера
+
+  node_config {
+    machine_type = "n1-standard-1"    # Тип машины
+    disk_type    = "pd-standard"      # Использование стандартных дисков
+    disk_size_gb = 50                 # Размер диска в гигабайтах
+  }
+
+  initial_node_count = var.GKE_NUM_NODES  # Количество узлов
+}
+
+module "gke_cluster" {
+  source         = "github.com/andreysvirid/test-tf-google-gke-cluster"  # Путь к вашему модулю
+  GOOGLE_REGION  = var.GOOGLE_REGION  # Регион
+  GOOGLE_PROJECT = var.GOOGLE_PROJECT # ID проекта
+  GKE_NUM_NODES  = var.GKE_NUM_NODES  # Количество узлов
+}

@@ -1,0 +1,71 @@
+terraform {
+  backend "gcs" {
+    bucket = "my-terra-state-bucket"
+    prefix = "terraform/state"
+  }
+
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 7.0"
+    }
+  }
+}
+
+provider "google" {
+  project = var.GOOGLE_PROJECT
+  region  = var.GOOGLE_REGION
+}
+
+# Создаем кластер GKE
+resource "google_container_cluster" "this" {
+  name     = "example-cluster"
+  location = var.GOOGLE_REGION
+
+  node_config {
+    machine_type = "n1-standard-1"
+    disk_type    = "pd-standard"
+    disk_size_gb = 50
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+
+  initial_node_count   = var.GKE_NUM_NODES
+  deletion_protection  = false
+}
+
+# TLS ключи для FluxCD
+module "tls_keys" {
+  source = "github.com/andreysvirid/tf-hashicorp-tls-keys"
+}
+
+# GitHub репозиторий для FluxCD
+module "flux_repo" {
+  source                   = "github.com/andreysvirid/tf-github-repository"
+  github_owner             = var.GITHUB_OWNER
+  github_token             = var.GITHUB_TOKEN
+  repository               = "gke-flux-gitops"              # имя репо (можно вынести в переменную)
+  description              = "GitOps repo for FluxCD-managed cluster"
+  public_key_openssh       = module.tls_keys.public_key_openssh
+  public_key_openssh_title = "flux-deploy-key"
+}
+
+# Bootstrap FluxCD
+module "flux_bootstrap" {
+  source = "github.com/andreysvirid/tf-fluxcd-flux-bootstrap"
+
+  #github_owner      = var.GITHUB_OWNER
+  github_token      = var.GITHUB_TOKEN
+  github_repository = module.flux_repo.repository
+  private_key       = module.tls_keys.private_key
+  #path              = "clusters/gke"
+  # k8s_config_path можно заменить на data "google_client_config"
+}
+
+
+
+# (Локально) проверка на KIND-кластере (опционально)
+module "kind_cluster" {
+  source = "github.com/andreysvirid/tf-kind-cluster"
+}

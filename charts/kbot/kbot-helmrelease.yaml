@@ -1,0 +1,29 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kbot
+  namespace: default
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./charts/kbot        # Локальний шлях до Helm chart
+      sourceRef:
+        kind: GitRepository
+        name: flux-repo           # Назва GitRepository, який Flux відслідковує
+  values:
+    replicaCount: 2
+    image:
+      repository: your-dockerhub-username/kbot
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 80
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi

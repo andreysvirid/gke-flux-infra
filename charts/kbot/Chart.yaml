@@ -1,0 +1,4 @@
+apiVersion: v2
+name: kbot
+description: A simple kbot application
+version: 0.1.0

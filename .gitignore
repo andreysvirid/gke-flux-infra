@@ -1,0 +1,14 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+
+# Secrets
+secrets.tfvars
+*.pem
+
+# Не включати інші git-репо
+gke-flux-gitops/
+terraform-infrastructure/
