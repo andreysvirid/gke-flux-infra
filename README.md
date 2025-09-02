@@ -1,28 +1,18 @@
 # GKE + FluxCD + GitHub Actions + Helm (kbot demo)
 
-## 🔹 Архітектура
+## Архітектура
 
 ```mermaid
 flowchart TD
-    %% Стилі компонентів
-    classDef terraform fill:#f7df1e,stroke:#000,color:#000
-    classDef kubernetes fill:#326ce5,stroke:#000,color:#fff
-    classDef github fill:#24292f,stroke:#000,color:#fff
-    classDef docker fill:#2496ed,stroke:#000,color:#fff
-    classDef flux fill:#0097d6,stroke:#000,color:#fff
-    classDef app fill:#28a745,stroke:#000,color:#fff
-    classDef dev fill:#ff9f1a,stroke:#000,color:#000
-
-    %% Компоненти і взаємодії
-    TF[Terraform]:::terraform -->|Створює GKE кластер| K8s[Kubernetes Cluster]:::kubernetes
-    TF -->|Генерує ключі для Flux| GH[GitHub Repository]:::github
-    GH -->|FluxCD підключається| K8s
-    Dev[Розробник]:::dev -->|Commit / PR| GH
-    GH -->|GitHub Actions: build & push Docker image| Docker[Docker Registry]:::docker
-    Docker -->|Оновлює тег образу в Helm chart| GH
-    FluxCD[FluxCD]:::flux -->|Синхронізація з Git| K8s
-    K8s -->|Оновлює Deployment / HelmRelease| App[PET-проєкт (kbot)]:::app
-🔹 Розгортання кластера та Flux через Terraform
+    TF[Terraform] --> K8s[Kubernetes Cluster]
+    TF --> GH[GitHub Repository]
+    GH --> FluxCD[FluxCD]
+    Dev[Розробник] --> GH
+    GH --> Docker[Docker Registry]
+    Docker --> GH
+    FluxCD --> K8s
+    K8s --> App[kbot]
+Розгортання кластера та Flux через Terraform
 Клонуйте репозиторій:
 
 bash
@@ -61,7 +51,7 @@ terraform plan -var-file="vars.tfvars" -var-file="secrets.tfvars"
 bash
 Копировать код
 terraform apply -var-file="vars.tfvars" -var-file="secrets.tfvars"
-🔹 HelmRelease для kbot (через Git)
+HelmRelease для kbot (через Git)
 Файл: charts/kbot/kbot-helmrelease.yaml
 
 yaml
@@ -85,19 +75,7 @@ spec:
       repository: your-dockerhub-username/kbot
       tag: latest
       pullPolicy: IfNotPresent
-    service:
-      type: ClusterIP
-      port: 80
-    resources:
-      limits:
-        cpu: 250m
-        memory: 256Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
-Flux автоматично застосує цей HelmRelease у кластері після пушу змін у Git.
-
-🔹 CI/CD через GitHub Actions
+CI/CD через GitHub Actions
 Файл: .github/workflows/docker-helm.yml
 
 yaml
@@ -113,58 +91,37 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     env:
       IMAGE_NAME: your-dockerhub-username/kbot
       CHART_PATH: ./charts/kbot
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build Docker image
-        run: |
-          docker build -t $IMAGE_NAME:latest .
-
-      - name: Push Docker image
-        run: |
-          docker push $IMAGE_NAME:latest
-
-      - name: Update Helm values.yaml
-        run: |
+      - run: docker build -t $IMAGE_NAME:latest .
+      - run: docker push $IMAGE_NAME:latest
+      - run: |
           yq eval ".image.tag = \"latest\"" -i $CHART_PATH/values.yaml
           git config --global user.email "flux-bot@example.com"
           git config --global user.name "flux-bot"
           git add $CHART_PATH/values.yaml
           git commit -m "Update Docker image tag to latest [skip ci]" || echo "No changes to commit"
           git push origin main
-🔹 Secrets у GitHub
-У репозиторії → Settings → Secrets and variables → Actions додайте:
-
+Secrets у GitHub
 DOCKER_USERNAME — логін Docker Hub
 
 DOCKER_PASSWORD — пароль/токен Docker Hub
 
-🔹 Перевірка
+Перевірка
 bash
 Копировать код
-# Статус Flux
 kubectl get pods -n flux-system
-
-# HelmRelease
 kubectl get hr -n default
-
-# Перевірка нового образу
 kubectl describe hr kbot -n default
-Pod-и мають перезапускатись з оновленим образом.
-
-🔹 Outputs Terraform
+Outputs Terraform
 bash
 Копировать код
 terraform output
@@ -177,19 +134,18 @@ gke_cluster_endpoint = "XX.XX.XX.XX"
 flux_repo_https_url  = "https://github.com/your-org/gke-flux-gitops.git"
 flux_repo_clone_url  = "git@github.com:your-org/gke-flux-gitops.git"
 flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
-⚠️ Приватний ключ у виводі позначений як sensitive і не показується.
+Приватний ключ позначений як sensitive.
 
-✅ Результат
+✅ Результат:
+
 Розгорнутий кластер GKE
 
 Встановлений Flux
 
 Налаштований GitRepository та HelmRelease для kbot
 
-Зміни в коді → GitHub Actions → новий Docker-образ → Flux автоматично оновлює застосунок у Kubernetes 🚀
+Зміни в коді → GitHub Actions → новий Docker-образ → Flux автоматично оновлює застосунок у Kubernetes
 
-yaml
-Копировать код
 
 
 
