@@ -1,10 +1,6 @@
-# GitOps розгортання PET-проєкту `kbot` у Kubernetes через FluxCD
+# GKE + FluxCD + GitHub Actions + Helm (kbot demo)
 
-Цей репозиторій демонструє повний GitOps-процес для PET-проєкту `kbot` з використанням **Terraform**, **GKE**, **FluxCD**, **Helm** та **GitHub Actions**.
-
----
-
-## 🔹 Архітектура GitOps
+## 🔹 Архітектура
 
 ```mermaid
 flowchart TD
@@ -19,13 +15,13 @@ flowchart TD
 
     %% Компоненти і взаємодії
     TF[Terraform]:::terraform -->|Створює GKE кластер| K8s[Kubernetes Cluster]:::kubernetes
-    TF -->|Генерує SSH ключі для Flux| GH[GitHub Repository]:::github
+    TF -->|Генерує ключі для Flux| GH[GitHub Repository]:::github
     GH -->|FluxCD підключається| K8s
     Dev[Розробник]:::dev -->|Commit / PR| GH
     GH -->|GitHub Actions: build & push Docker image| Docker[Docker Registry]:::docker
     Docker -->|Оновлює тег образу в Helm chart| GH
     FluxCD[FluxCD]:::flux -->|Синхронізація з Git| K8s
-    K8s -->|Оновлює Deployment / HelmRelease| App[PET-проєкт (kbot) запущений]:::app
+    K8s -->|Оновлює Deployment / HelmRelease| App[PET-проєкт (kbot)]:::app
 🔹 Розгортання кластера та Flux через Terraform
 Клонуйте репозиторій:
 
@@ -48,20 +44,17 @@ secrets.tfvars:
 hcl
 Копировать код
 GITHUB_TOKEN = "ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
-Важливо: GitHub token повинен мати права repo та admin:public_key.
+⚠️ Token GitHub має мати права: repo та admin:public_key.
 
-Ініціалізація Terraform:
-
+1. Ініціалізація Terraform
 bash
 Копировать код
 terraform init -upgrade
-Перевірка плану:
-
+2. Перевірка плану
 bash
 Копировать код
 terraform plan -var-file="vars.tfvars" -var-file="secrets.tfvars"
-Застосування конфігурації:
-
+3. Застосування конфігурації
 bash
 Копировать код
 terraform apply -var-file="vars.tfvars" -var-file="secrets.tfvars"
@@ -102,7 +95,7 @@ spec:
 Flux автоматично застосує цей HelmRelease у кластері після пушу змін у Git.
 
 🔹 CI/CD через GitHub Actions
-Workflow: .github/workflows/docker-helm.yml
+Файл: .github/workflows/docker-helm.yml
 
 yaml
 Копировать код
@@ -135,7 +128,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t $IMAGE_NAME:latest .
-      
+
       - name: Push Docker image
         run: |
           docker push $IMAGE_NAME:latest
@@ -149,6 +142,8 @@ jobs:
           git commit -m "Update Docker image tag to latest [skip ci]" || echo "No changes to commit"
           git push origin main
 🔹 Secrets у GitHub
+У налаштуваннях репозиторію → Settings → Secrets and variables → Actions додайте:
+
 DOCKER_USERNAME — логін Docker Hub
 
 DOCKER_PASSWORD — пароль/токен Docker Hub
@@ -164,9 +159,7 @@ kubectl get hr -n default
 
 # Перевірка нового образу
 kubectl describe hr kbot -n default
-Новий тег образу повинен застосовуватись автоматично.
-
-Podи перезапускаються з оновленим образом.
+Pod-и мають перезапускатись з оновленим образом.
 
 🔹 Outputs Terraform
 bash
@@ -176,14 +169,23 @@ terraform output
 
 ini
 Копировать код
-gke_cluster_name = "example-cluster"
+gke_cluster_name     = "example-cluster"
 gke_cluster_endpoint = "XX.XX.XX.XX"
-flux_repo_https_url = "https://github.com/your-org/gke-flux-gitops.git"
-flux_repo_clone_url = "git@github.com:your-org/gke-flux-gitops.git"
-flux_deploy_key_pub = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
-Примітка: приватний ключ позначений як sensitive і не показується у звичайному виводі.
+flux_repo_https_url  = "https://github.com/your-org/gke-flux-gitops.git"
+flux_repo_clone_url  = "git@github.com:your-org/gke-flux-gitops.git"
+flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
+⚠️ Приватний ключ у виводі позначений як sensitive і не показується.
 
-Цей README тепер повністю відображає процес GitOps: Terraform створює кластер і репозиторій, GitHub Actions оновлює Docker-образ та Helm chart, Flux автоматично застосовує зміни у Kubernetes.
+✅ Результат
+Успішним тестом вважається:
+
+Розгорнутий кластер GKE
+
+Встановлений Flux
+
+Налаштований GitRepository та HelmRelease для kbot
+
+Зміни в коді → GitHub Actions → новий Docker-образ → Flux автоматично оновлює застосунок у Kubernetes 🚀
 
 
 
