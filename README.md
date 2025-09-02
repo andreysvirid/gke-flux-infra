@@ -21,7 +21,7 @@ git clone git@github.com:your-org/your-repo.git
 cd your-repo
 Створіть файли змінних:
 
-vars.tfvars:
+vars.tfvars
 
 hcl
 Копировать код
@@ -29,12 +29,12 @@ GOOGLE_PROJECT = "my-gcp-project"
 GOOGLE_REGION  = "us-central1"
 GKE_NUM_NODES  = 3
 GITHUB_OWNER   = "your-github-username"
-secrets.tfvars:
+secrets.tfvars
 
 hcl
 Копировать код
 GITHUB_TOKEN = "ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
-⚠️ Token GitHub має мати права: repo та admin:public_key.
+⚠️ Token GitHub має права: repo та admin:public_key.
 
 Ініціалізація Terraform:
 
@@ -51,7 +51,7 @@ terraform plan -var-file="vars.tfvars" -var-file="secrets.tfvars"
 bash
 Копировать код
 terraform apply -var-file="vars.tfvars" -var-file="secrets.tfvars"
-HelmRelease для kbot (через Git)
+HelmRelease для kbot
 Файл: charts/kbot/kbot-helmrelease.yaml
 
 yaml
@@ -134,8 +134,6 @@ gke_cluster_endpoint = "XX.XX.XX.XX"
 flux_repo_https_url  = "https://github.com/your-org/gke-flux-gitops.git"
 flux_repo_clone_url  = "git@github.com:your-org/gke-flux-gitops.git"
 flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
-Приватний ключ позначений як sensitive.
-
 ✅ Результат:
 
 Розгорнутий кластер GKE
