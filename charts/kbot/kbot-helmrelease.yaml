@@ -1,20 +1,20 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: kbot
+  name: gke-flux-infra
   namespace: default
 spec:
   interval: 1m
   chart:
     spec:
-      chart: ./charts/kbot
+      chart: ./charts/gke-flux-infra
       sourceRef:
         kind: GitRepository
         name: gke-flux-infra   # Назва GitRepository, який Flux відслідковує
   values:
     replicaCount: 2
     image:
-      repository: andreysvirid/kbot  #your dockerhub username
+      repository: andreysvirid/gke-flux-infra #your dockerhub username
       tag: latest
       pullPolicy: IfNotPresent
     service:

@@ -7,7 +7,7 @@
 replicaCount: 2
 
 image:
-  repository: andreysvirid/kbot
+  repository: andreysvirid/gke-flux-infra
   tag: latest
   pullPolicy: IfNotPresent
 

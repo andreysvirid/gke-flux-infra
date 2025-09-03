@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kbot
+  name: gke-flux-infra
   labels:
     app: kbot
 spec:
