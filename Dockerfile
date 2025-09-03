@@ -1,5 +1,6 @@
 # Stage 1: Build
-FROM golang:1.21-alpine AS builder
+#FROM golang:1.22.2-alpine AS builder
+FROM golang:1.22-alpine AS builder
 
 # Робоча директорія
 WORKDIR /app
