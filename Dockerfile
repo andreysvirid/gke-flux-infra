@@ -15,7 +15,7 @@ COPY kbot/ ./
 RUN go test ./...
 
 # Build
-RUN go build -o kbot
+RUN go build -o kbot kbot/main.go
 
 # Stage 2: Final image
 FROM debian:bullseye-slim

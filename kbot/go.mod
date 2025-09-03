@@ -1,9 +1,5 @@
 module github.com/andreysvirid/kbot
 
-go 1.21
+go 1.22.2
 
-require (
-	gopkg.in/telebot.v3 v3.3.8
-	github.com/stianeikeland/go-rpio v4.2.0+incompatible
-	github.com/spf13/cobra v1.10.1
-)
+require github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
