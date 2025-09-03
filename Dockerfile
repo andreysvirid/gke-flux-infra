@@ -2,7 +2,7 @@ FROM golang:1.21-alpine AS builder
 WORKDIR /app
 
 # Копіюємо тільки файли Go-модуля спершу
-COPY go.mod go.sum ./
+COPY go.mod go.sum ./kbot
 RUN go mod download
 
 # Копіюємо решту коду
