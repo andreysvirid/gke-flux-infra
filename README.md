@@ -9,9 +9,9 @@
 Порядок дій:
 
 ```bash
-1. Створіть файли змінних:
-git clone git@github.com:your-org/your-repo.git
-cd your-repo
+1. Клонуйте репозиторій:
+git clone https://github.com/andreysvirid/gke-flux-infra.git
+cd gke-flux-infra.git
 
 2. Створіть файли змінних:
 vars.tfvars
@@ -97,12 +97,10 @@ jobs:
           git push origin main
 Secrets у GitHub
 У репозиторії → Settings → Secrets and variables → Actions додайте:
-
 DOCKER_USERNAME — логін Docker Hub
 DOCKER_PASSWORD — пароль/токен Docker Hub
 
 7. Перевірка
-
 # Статус Flux
 kubectl get pods -n flux-system
 # HelmRelease
@@ -121,7 +119,6 @@ flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
 ⚠️ Приватний ключ у виводі позначений як sensitive і не показується.
 
 8. Результат
-
 Розгорнутий кластер GKE
 Встановлений Flux
 Налаштований GitRepository та HelmRelease для kbot
