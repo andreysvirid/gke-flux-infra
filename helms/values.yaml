@@ -1,0 +1,9 @@
+image:
+  registry: "docker.io"
+  repository: "andreysvirid/kbot"
+  tag: "v1.0.0-7711710-linux-amd64"   # тег можна підставляти з Git SHA у CI/CD
+  pullPolicy: IfNotPresent
+  os: linux
+  arch: amd64
+
+replicaCount: 1
