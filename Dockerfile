@@ -5,11 +5,12 @@ FROM golang:1.21-alpine AS builder
 WORKDIR /app
 
 # Копіюємо go.mod та go.sum
-COPY kbot/go.mod kbot/go.sum ./
+COPY go.mod go.sum ./
+#RUN go mod download
 RUN go mod tidy
 
 # Копіюємо весь код
-COPY kbot/ ./
+COPY . .
 
 # Запускаємо тести
 RUN go test ./...
