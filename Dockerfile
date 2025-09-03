@@ -1,21 +1,23 @@
-# ===== Stage 0: Run tests =====
-FROM golang:1.21-alpine AS tester
+# Stage 1: Build
+FROM golang:1.21-alpine AS builder
+
+# Робоча директорія
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
+
+# Копіюємо go.mod та go.sum
+COPY kbot/go.mod kbot/go.sum ./
+RUN go mod tidy
+
+# Копіюємо весь код
+COPY kbot/ ./
+
 # Запускаємо тести
 RUN go test ./...
 
-# ===== Stage 1: Build binary =====
-FROM golang:1.21-alpine AS builder
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-RUN go build -o kbot ./cmd/main.go
+# Build
+RUN go build -o kbot
 
-# ===== Stage 2: Final image =====
+# Stage 2: Final image
 FROM debian:bullseye-slim
 WORKDIR /app
 COPY --from=builder /app/kbot .
