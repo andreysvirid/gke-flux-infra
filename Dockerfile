@@ -3,14 +3,12 @@ FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
 
-# Копіюємо Go-модуль з папки kbot
-COPY kbot/go.mod kbot/go.sum ./
-
-# Завантажуємо залежності
+# Копіюємо модуль та завантажуємо залежності
+COPY go.mod go.sum ./
 RUN go mod tidy
 
-# Копіюємо весь код з папки kbot
-COPY kbot/ .
+# Копіюємо весь код
+COPY . .
 
 # Запускаємо тести
 RUN go test ./...
@@ -22,7 +20,7 @@ RUN go build -o kbot .
 FROM debian:bullseye-slim
 WORKDIR /app
 
-# Копіюємо готовий бінарник з етапу збірки
+# Копіюємо готовий бінарник
 COPY --from=builder /app/kbot .
 
 CMD ["./kbot"]
