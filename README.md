@@ -7,12 +7,12 @@
 ## Розгортання кластера та Flux через Terraform
 
 1. Клонуйте репозиторій:
-```bash
+
 git clone git@github.com:your-org/your-repo.git
 cd your-repo
 
 2. Створіть файли змінних:
-```bash
+
 vars.tfvars
 GOOGLE_PROJECT = "my-gcp-project"
 GOOGLE_REGION  = "us-central1"
