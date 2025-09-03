@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ develop ]
 
 env:
   TARGETARCH: amd64
@@ -75,4 +75,4 @@ jobs:
           git add charts/kbot/values.yaml
           git commit -m "ci: update image tag to $VERSION" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB2_TOKEN }}@github.com/andreysvirid/gke-flux-infra.git
-          git push origin main
+          git push origin develop
