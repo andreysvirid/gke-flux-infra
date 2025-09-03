@@ -1,24 +1,9 @@
-#image:
-#  repository: andreysvirid/kbot
-##  tag: "1.0.0"
-#  tag: "1.0.1"
-#replicaCount: 1
-
-replicaCount: 2
-
 image:
-  repository: andreysvirid/gke-flux-infra
-  tag: latest
+  registry: "docker.io"
+  repository: "andreysvirid/kbot"
+  tag: "v1.0.0-7711710-linux-amd64"   # тег можна підставляти з Git SHA у CI/CD
   pullPolicy: IfNotPresent
+  os: linux
+  arch: amd64
 
-service:
-  type: ClusterIP  #???
-  port: 80
-
-resources:
-  limits:
-    cpu: 250m
-    memory: 256Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+replicaCount: 1
