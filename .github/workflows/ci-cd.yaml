@@ -25,7 +25,6 @@ jobs:
       # 2️⃣ Run tests
       - name: Run tests
         run: |
-          cd kbot
           go mod tidy
           go test ./...
 
@@ -46,8 +45,8 @@ jobs:
             --platform ${{ env.TARGETOS }}/$TARGETARCH \
                  -t ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${IMAGE_TAG} \
             --push \
-            kbot/
-
+            .
+           
   cd:
     name: CD
     needs: ci
