@@ -77,4 +77,4 @@ jobs:
           git config user.email "github-actions@github.com"
           git add helm/values.yaml
           git commit -m "Update image tag to ${{ env.IMAGE_TAG }}" || echo "No changes to commit"
-          git push origin develop 
+          git push origin develop || echo "Push failed, maybe no changes"
