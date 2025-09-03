@@ -67,14 +67,12 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           yq -i '.image.repository = strenv(IMAGE_REPOSITORY) | .image.tag = strenv(VERSION)' charts/kbot/values.yaml
 
-      # 8️⃣ Update helm/values.yaml
-      - name: Update helm/values.yaml
+      # 3️⃣ Commit Helm chart changes
+      - name: Commit Helm chart changes
         run: |
-          yq e -i ".image.tag = \"${IMAGE_TAG}\"" helm/values.yaml
-          yq e -i ".image.os = \"${OS}\"" helm/values.yaml
-          yq e -i ".image.arch = \"${ARCH}\"" helm/values.yaml
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add helm/values.yaml
-          git commit -m "Update image tag to ${{ env.IMAGE_TAG }}" || echo "No changes to commit"
-          git push origin develop || echo "Push failed, maybe no changes"
+          git add charts/kbot/values.yaml
+          git commit -m "ci: update image tag to $VERSION" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB2_TOKEN }}@github.com/andreysvirid/gke-flux-infra.git
+          git push origin develop
