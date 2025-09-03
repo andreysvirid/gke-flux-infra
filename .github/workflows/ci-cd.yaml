@@ -74,8 +74,5 @@ jobs:
           git config user.email github-actions@github.com
           git add charts/kbot/values.yaml
           git commit -m "ci: update image tag to $VERSION" || echo "No changes to commit"
-#          git remote set-url origin https://x-access-token:${{ secrets.GITHUB2_TOKEN }}@github.com/andreysvirid/gke-flux-infra.git
-#          git push origin main
-          git push https://$GITHUB2_TOKEN@github.com/andreysvirid/gke-flux-infra.git main
-        env:
-          PERSONAL_GITHUB_TOKEN: ${{ secrets.GITHUB2_TOKEN }}
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB2_TOKEN }}@github.com/andreysvirid/gke-flux-infra.git
+          git push origin main
