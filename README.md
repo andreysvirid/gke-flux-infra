@@ -9,11 +9,11 @@
 Порядок дій:
 
 ```bash
-1. Клонуйте репозиторій:
+**1. Клонуйте репозиторій:**
 git clone https://github.com/andreysvirid/gke-flux-infra.git
 cd gke-flux-infra.git
 
-2. Створіть файли змінних:
+**2. Створіть файли змінних:**
 vars.tfvars
 GOOGLE_PROJECT = "my-gcp-project"
 GOOGLE_REGION  = "us-central1"
@@ -23,14 +23,15 @@ secrets.tfvars
 GITHUB_TOKEN = "ghp_XXXXXXXXXXXXXXXXXXXXXXXX"
 ⚠️ GitHub Token повинен мати права: repo та admin:public_key.
 
-3. Ініціалізація Terraform:
+
+**3. Ініціалізація Terraform:**
 terraform init -upgrade
 Перевірка плану:
 terraform plan -var-file="vars.tfvars" -var-file="secrets.tfvars"
 Застосування конфігурації:
 terraform apply -var-file="vars.tfvars" -var-file="secrets.tfvars"
 
-4. HelmRelease для kbot
+**4. HelmRelease для kbot**
 Файл: charts/kbot/kbot-helmrelease.yaml
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -63,7 +64,7 @@ spec:
         memory: 128Mi
 Flux автоматично застосує цей HelmRelease у кластері після пушу змін у Git.
 
-6. CI/CD через GitHub Actions
+**5. CI/CD через GitHub Actions**
 Файл: .github/workflows/docker-helm.yml
 name: Build & Deploy kbot
 
@@ -100,7 +101,7 @@ Secrets у GitHub
 DOCKER_USERNAME — логін Docker Hub
 DOCKER_PASSWORD — пароль/токен Docker Hub
 
-7. Перевірка
+**6. Перевірка**
 # Статус Flux
 kubectl get pods -n flux-system
 # HelmRelease
@@ -118,7 +119,7 @@ flux_repo_clone_url  = "git@github.com:your-org/gke-flux-gitops.git"
 flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
 ⚠️ Приватний ключ у виводі позначений як sensitive і не показується.
 
-8. Результат
+**7. Результат**
 Розгорнутий кластер GKE
 Встановлений Flux
 Налаштований GitRepository та HelmRelease для kbot
