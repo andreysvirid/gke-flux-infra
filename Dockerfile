@@ -17,7 +17,11 @@ COPY . .
 RUN go test ./...
 
 # Build
-RUN go build -o kbot kbot/main.go
+#RUN go build -o kbot kbot/main.go
+#RUN go build -o kbot main.go
+# або навіть краще (так прийнято в Go):
+RUN go build -o kbot .  
+
 
 # Stage 2: Final image
 FROM debian:bullseye-slim
