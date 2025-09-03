@@ -10,11 +10,11 @@ spec:
       chart: ./charts/kbot        # Локальний шлях до Helm chart
       sourceRef:
         kind: GitRepository
-        name: flux-repo           # Назва GitRepository, який Flux відслідковує
+        name: gke-flux-infra           # Назва GitRepository, який Flux відслідковує
   values:
     replicaCount: 2
     image:
-      repository: your-dockerhub-username/kbot
+      repository: andreysvirid/kbot #your dockerhub username
       tag: latest
       pullPolicy: IfNotPresent
     service:
