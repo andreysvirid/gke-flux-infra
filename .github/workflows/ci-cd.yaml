@@ -8,15 +8,17 @@ env:
   TARGETARCH: amd64
   TARGETOS: linux
   IMAGE_REGISTRY: docker.io
-  IMAGE_REPOSITORY: andreysvirid/kbot2   # твій образ у Docker Hub
+  IMAGE_REPOSITORY: andreysvirid/kbot2  # image name in Docker Hub
 
 jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.build.outputs.image_tag }}
 
     steps:
-      # 1️⃣ Checkout develop
+      # 1️⃣ Checkout
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -35,12 +37,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4️⃣ Build & Push Docker image
+      # 4️⃣ Build & Push image
       - name: Build & Push
+        id: build
         run: |
           SHORT_SHA=$(git rev-parse --short HEAD)
           IMAGE_TAG="v1.0.0-${SHORT_SHA}"
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT   # <-- output для CD
+          
           docker buildx build \
             --platform ${{ env.TARGETOS }}/${{ env.TARGETARCH }} \
             -t ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${IMAGE_TAG} \
@@ -53,25 +58,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout develop
+      # 1️⃣ Checkout
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2️⃣ Update Helm chart
+      # 2️⃣ Завантажуємо IMAGE_TAG з CI
+      - name: Load IMAGE_TAG
+        run: echo "IMAGE_TAG=${{ needs.ci.outputs.image_tag }}" >> $GITHUB_ENV
+
+      # 3️⃣ Update Helm chart
       - name: Update Helm chart
         run: |
-          VERSION="${{ env.IMAGE_TAG }}"
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          yq -i ".image.repository = \"${{ env.IMAGE_REPOSITORY }}\" | .image.tag = \"${VERSION}\"" helm/values.yaml
+          echo "Using IMAGE_TAG=${IMAGE_TAG}"
+          yq -i ".image.repository = \"${IMAGE_REPOSITORY}\" | .image.tag = \"${IMAGE_TAG}\"" helm/values.yaml
 
-      # 3️⃣ Commit Helm chart changes
+      # 4️⃣ Commit Helm chart changes
       - name: Commit Helm chart changes
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add helm/values.yaml
-          git commit -m "ci: update image tag to ${{ env.VERSION }}" || echo "No changes to commit"
+          git commit -m "ci: update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB2_TOKEN }}@github.com/andreysvirid/gke-flux-infra.git
           git push origin develop
