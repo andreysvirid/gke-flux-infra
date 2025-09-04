@@ -8,7 +8,7 @@ env:
   TARGETARCH: amd64
   TARGETOS: linux
   IMAGE_REGISTRY: docker.io
-  IMAGE_REPOSITORY: andreysvirid/kbot
+  IMAGE_REPOSITORY: andreysvirid/gke-flux-infra
 
 jobs:
   ci:
