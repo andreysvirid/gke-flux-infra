@@ -65,7 +65,7 @@ jobs:
           SHORT_SHA=$(git rev-parse --short HEAD)
           VERSION="v1.0.0-${SHORT_SHA}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          yq -i '.image.repository = strenv(IMAGE_REPOSITORY) | .image.tag = strenv(VERSION)' charts/kbot/values.yaml
+          yq -i '.image.repository = strenv(IMAGE_REPOSITORY) | .image.tag = strenv(VERSION)' helm/values.yaml
 
       # 8️⃣ Update helm/values.yaml
       - name: Update helm/values.yaml
