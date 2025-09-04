@@ -49,15 +49,7 @@ resource "google_container_cluster" "this" {
 }
 
 # =====================
-# TLS ключі для Flux (можуть знадобитись для SSH, якщо потрібно)
-# =====================
-resource "tls_private_key" "flux" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-# =====================
-# GitHub репозиторій для Flux
+# GitHub репо для Flux
 # =====================
 resource "github_repository" "flux_repo" {
   name        = "gke-flux-gitops"
@@ -65,15 +57,27 @@ resource "github_repository" "flux_repo" {
   visibility  = "private"
 }
 
-#resource "github_repository_deploy_key" "flux_key" {
-#  repository = github_repository.flux_repo.name
-#  title      = "flux-deploy-key"
-#  key        = tls_private_key.flux.public_key_openssh
-#  read_only  = false
-#}
+# =====================
+# Flux bootstrap (через CLI)
+# =====================
+resource "null_resource" "flux_bootstrap" {
+  depends_on = [google_container_cluster.this, github_repository.flux_repo]
+
+  provisioner "local-exec" {
+    command = <<EOT
+      export KUBECONFIG=$(terraform output -raw kubeconfig)
+      flux bootstrap github \
+        --owner=${var.GITHUB_OWNER} \
+        --repository=${github_repository.flux_repo.name} \
+        --branch=main \
+        --path=clusters/gke \
+        --personal
+    EOT
+  }
+}
 
 # =====================
-# Flux Provider (HTTPS + токен)
+# Flux Provider для HelmRelease
 # =====================
 provider "flux" {
   kubernetes = {
@@ -85,7 +89,7 @@ provider "flux" {
   }
 
   git = {
-    url          = github_repository.flux_repo.http_clone_url  # HTTPS URL
+    url          = github_repository.flux_repo.http_clone_url
     branch       = "main"
     author_name  = "flux-bot"
     author_email = "flux-bot@example.com"
@@ -95,8 +99,6 @@ provider "flux" {
 }
 
 # =====================
-# Примітка:
-# HelmRelease створюється **у Git**, наприклад:
-# charts/kbot/kbot-helmrelease.yaml
-# Flux автоматично його застосує у кластері
+# HelmRelease можна додати у Git
+# Наприклад, у репо: clusters/gke/kbot-helmrelease.yaml
 # =====================

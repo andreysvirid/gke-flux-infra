@@ -1,9 +1,22 @@
-image:
-  registry: "docker.io"
-  repository: "andreysvirid/gke-flux-infra"
-  tag: "v1.0.0-7711710-linux-amd64"   # тег можна підставляти з Git SHA у CI/CD
-  pullPolicy: IfNotPresent
-  os: linux
-  arch: amd64
+replicaCount: 1                             # кількість реплік
 
-replicaCount: 1
+
+image:
+  registry: "docker.io"              # Docker Hub
+  repository: "andreysvirid/kbot2"   # образ у Docker Hub
+  tag: ""                      # CI/CD підставляє тег автоматично
+  pullPolicy: IfNotPresent           # Kubernetes буде використовувати локальний образ, якщо він вже є
+  os: linux                          # ОС для multi-arch
+  arch: amd64                        # архітектура
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
