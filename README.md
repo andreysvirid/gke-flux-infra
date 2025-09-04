@@ -127,5 +127,5 @@ flux_deploy_key_pub  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ..."
 ✅ Встановлений Flux
 ✅ Налаштований GitRepository та HelmRelease для kbot
 ✅ Зміни в коді → GitHub Actions → новий Docker-образ → Flux автоматично оновлює застосунок у Kubernetes 🚀
-:))))))
+:)))))))
 
