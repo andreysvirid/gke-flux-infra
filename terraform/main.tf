@@ -1,3 +1,8 @@
+# =====================
+# HelmRelease можна додати у Git
+# Наприклад, у репо: clusters/gke/kbot-helmrelease.yaml
+# =====================
+
 terraform {
   required_providers {
     google = {
@@ -6,7 +11,7 @@ terraform {
     }
     flux = {
       source  = "fluxcd/flux"
-      version = "~> 1.5"
+      version = "~> 1.6"
     }
     github = {
       source  = "integrations/github"
@@ -32,7 +37,27 @@ provider "github" {
 data "google_client_config" "default" {}
 
 # =====================
-# GKE Cluster
+# Flux Provider (HTTPS + токен, гілка develop)
+# =====================
+provider "flux" {
+  kubernetes = {
+    host                   = google_container_cluster.this.endpoint
+    token                  = data.google_client_config.default.access_token
+    cluster_ca_certificate = base64decode(google_container_cluster.this.master_auth[0].cluster_ca_certificate)
+  }
+
+  git = {
+    url          = github_repository.flux_repo.http_clone_url  # HTTPS URL
+    branch       = "develop"                                   # вказуємо гілку develop
+    author_name  = "flux-bot"
+    author_email = "flux-bot@example.com"
+    username     = var.GITHUB_OWNER
+    password     = var.GITHUB_TOKEN
+  }
+}
+
+# =====================
+# GKE Cluster (якщо кластер вже є, цей блок можна коментувати)
 # =====================
 resource "google_container_cluster" "this" {
   name     = "example-cluster"
@@ -49,7 +74,7 @@ resource "google_container_cluster" "this" {
 }
 
 # =====================
-# GitHub репо для Flux
+# GitHub репозиторій для Flux
 # =====================
 resource "github_repository" "flux_repo" {
   name        = "gke-flux-gitops"
@@ -57,56 +82,21 @@ resource "github_repository" "flux_repo" {
   visibility  = "private"
 }
 
-
+# =====================
+# Bootstrap Flux у кластері
+# =====================
 resource "flux_bootstrap_git" "this" {
-  path   = "clusters/gke"
-  branch = "main"
+  path = "clusters/gke"   # шлях у репозиторії для кластерних ресурсів
+  # branch не передаємо, бо вже вказали в провайдері flux
 }
 
 # =====================
-# Flux bootstrap (через CLI)
+# Outputs
 # =====================
-resource "null_resource" "flux_bootstrap" {
-  depends_on = [google_container_cluster.this, github_repository.flux_repo]
-
-  provisioner "local-exec" {
-    command = <<EOT
-      export KUBECONFIG=$(terraform output -raw kubeconfig)
-      flux bootstrap github \
-        --owner=${var.GITHUB_OWNER} \
-        --repository=${github_repository.flux_repo.name} \
-        --branch=main \
-        --path=clusters/gke \
-        --personal
-    EOT
-  }
+output "flux_git_url" {
+  value = github_repository.flux_repo.http_clone_url
 }
 
-# =====================
-# Flux Provider для HelmRelease
-# =====================
-provider "flux" {
-  kubernetes = {
-    host                   = google_container_cluster.this.endpoint
-    token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = base64decode(
-      google_container_cluster.this.master_auth[0].cluster_ca_certificate
-    )
-  }
-
-  git = {
-    url          = github_repository.flux_repo.http_clone_url
-    branch       = "main"
-    author_name  = "flux-bot"
-    author_email = "flux-bot@example.com"
-    username     = var.GITHUB_OWNER
-    password     = var.GITHUB_TOKEN
-  }
+output "cluster_name" {
+  value = google_container_cluster.this.name
 }
-
-
-
-# =====================
-# HelmRelease можна додати у Git
-# Наприклад, у репо: clusters/gke/kbot-helmrelease.yaml
-# =====================

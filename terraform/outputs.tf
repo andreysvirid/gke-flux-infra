@@ -18,13 +18,13 @@ output "flux_repo_clone_url" {
   value       = github_repository.flux_repo.ssh_clone_url
 }
 
-output "flux_deploy_key_pub" {
-  description = "Публічний ключ для deploy key Flux"
-  value       = tls_private_key.flux.public_key_openssh
-}
+#output "flux_deploy_key_pub" {
+#  description = "Публічний ключ для deploy key Flux"
+#  value       = tls_private_key.flux.public_key_openssh
+#}
 
-output "flux_private_key" {
-  description = "Приватний ключ TLS (sensitive)"
-  value       = tls_private_key.flux.private_key_pem
-  sensitive   = true
-}
+#output "flux_private_key" {
+#  description = "Приватний ключ TLS (sensitive)"
+#  value       = tls_private_key.flux.private_key_pem
+#  sensitive   = true
+#}
