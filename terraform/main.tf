@@ -57,6 +57,12 @@ resource "github_repository" "flux_repo" {
   visibility  = "private"
 }
 
+
+resource "flux_bootstrap_git" "this" {
+  path   = "clusters/gke"
+  branch = "main"
+}
+
 # =====================
 # Flux bootstrap (через CLI)
 # =====================
@@ -97,6 +103,8 @@ provider "flux" {
     password     = var.GITHUB_TOKEN
   }
 }
+
+
 
 # =====================
 # HelmRelease можна додати у Git
