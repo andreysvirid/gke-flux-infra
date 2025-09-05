@@ -1,22 +1,3 @@
-replicaCount: 1                             # кількість реплік
-
-
 image:
-  registry: "docker.io"              # Docker Hub
-  repository: "andreysvirid/kbot2"   # образ у Docker Hub
-  tag: ""                      # CI/CD підставляє тег автоматично
-  pullPolicy: IfNotPresent           # Kubernetes буде використовувати локальний образ, якщо він вже є
-  os: linux                          # ОС для multi-arch
-  arch: amd64                        # архітектура
-
-service:
-  type: ClusterIP
-  port: 80
-
-resources:
-  limits:
-    cpu: 250m
-    memory: 256Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+  repository: andreysvirid/kbot
+  tag: "1.0.0"
