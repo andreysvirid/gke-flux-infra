@@ -1,17 +1,8 @@
-# =====================
-# HelmRelease можна додати у Git
-# Наприклад, у репо: clusters/gke/kbot-helmrelease.yaml
-# =====================
-
 terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
       version = "~> 7.0"
-    }
-    flux = {
-      source  = "fluxcd/flux"
-      version = "~> 1.6"
     }
     github = {
       source  = "integrations/github"
@@ -34,30 +25,8 @@ provider "github" {
   token = var.GITHUB_TOKEN
 }
 
-data "google_client_config" "default" {}
-
 # =====================
-# Flux Provider (HTTPS + токен, гілка develop)
-# =====================
-provider "flux" {
-  kubernetes = {
-    host                   = google_container_cluster.this.endpoint
-    token                  = data.google_client_config.default.access_token
-    cluster_ca_certificate = base64decode(google_container_cluster.this.master_auth[0].cluster_ca_certificate)
-  }
-
-  git = {
-    url          = github_repository.flux_repo.http_clone_url  # HTTPS URL
-    branch       = "develop"                                   # вказуємо гілку develop
-    author_name  = "flux-bot"
-    author_email = "flux-bot@example.com"
-    username     = var.GITHUB_OWNER
-    password     = var.GITHUB_TOKEN
-  }
-}
-
-# =====================
-# GKE Cluster (якщо кластер вже є, цей блок можна коментувати)
+# GKE Cluster
 # =====================
 resource "google_container_cluster" "this" {
   name     = "example-cluster"
@@ -77,37 +46,19 @@ resource "google_container_cluster" "this" {
 # GitHub репозиторій для Flux
 # =====================
 resource "github_repository" "flux_repo" {
-  name        = "gke-flux-gitops"
-  description = "GitOps repo for Flux-managed cluster"
+  name        = "gke-flux-infra"
+  description = "GitOps repository for Flux-managed GKE cluster"
   visibility  = "private"
-}
-
-# =====================
-# Bootstrap Flux у кластері
-# =====================
-resource "flux_bootstrap_git" "this" {
-  url      = "https://github.com/andreysvirid/gke-flux-infra.git"
-  branch   = "develop"  # якщо хочеш явно вказати гілку
-  path     = "./clusters"
-
-  author {
-    name  = "flux-bot"
-    email = "flux-bot@example.com"
-  }
-
-  git_auth {
-    user  = var.GITHUB_OWNER
-    token = var.GITHUB_TOKEN
-  }
+  auto_init   = true      # створює default README
 }
 
 # =====================
 # Outputs
 # =====================
-output "flux_git_url" {
-  value = github_repository.flux_repo.http_clone_url
+output "gke_cluster_name" {
+  value = google_container_cluster.this.name
 }
 
-output "cluster_name" {
-  value = google_container_cluster.this.name
+output "flux_repo_https_url" {
+  value = github_repository.flux_repo.html_url
 }
