@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: gke-flux-infra-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: ssh://git@github.com/andreysvirid/gke-flux-infra
+  ref:
+    branch: develop
+  path: ./clusters
