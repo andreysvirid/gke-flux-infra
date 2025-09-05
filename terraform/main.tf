@@ -86,8 +86,19 @@ resource "github_repository" "flux_repo" {
 # Bootstrap Flux у кластері
 # =====================
 resource "flux_bootstrap_git" "this" {
-  path = "clusters/gke"   # шлях у репозиторії для кластерних ресурсів
-  # branch не передаємо, бо вже вказали в провайдері flux
+  url      = "https://github.com/andreysvirid/gke-flux-infra.git"
+  branch   = "develop"  # якщо хочеш явно вказати гілку
+  path     = "./clusters"
+
+  author {
+    name  = "flux-bot"
+    email = "flux-bot@example.com"
+  }
+
+  git_auth {
+    user  = var.GITHUB_OWNER
+    token = var.GITHUB_TOKEN
+  }
 }
 
 # =====================
