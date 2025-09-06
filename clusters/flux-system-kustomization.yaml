@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  path: ./helm      # <-- шлях у репо, де знаходяться YAML ! 
+  path: ./clusters      # <-- шлях у репо, де знаходяться YAML ! 
   prune: true
   sourceRef:
     kind: GitRepository
