@@ -46,7 +46,7 @@ resource "google_container_cluster" "this" {
 # GitHub репозиторій для Flux
 # =====================
 resource "github_repository" "flux_repo" {
-  name        = "gke-flux-infra"
+  name        = "gke-flux-infra2"
   description = "GitOps repository for Flux-managed GKE cluster"
   visibility  = "private"
   auto_init   = true      # створює default README
