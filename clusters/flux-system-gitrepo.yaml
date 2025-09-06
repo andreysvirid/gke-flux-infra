@@ -8,3 +8,4 @@ spec:
   url: ssh://git@github.com/andreysvirid/gke-flux-infra
   ref:
     branch: develop
+    
