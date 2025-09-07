@@ -10,11 +10,11 @@ spec:
       chart: ./helm          # шлях до Helm chart відносно GitRepository
       sourceRef:
         kind: GitRepository
-        name: flux-system
+        name: gke-flux-infra
         namespace: flux-system
   valuesFrom:
     - kind: GitRepository
-      name: flux-system
+      name: gke-flux-infra
       path: ./helm/values.yaml     # values.yaml у Git з тегом образу і іншими значеннями
   values:
     env:
@@ -22,4 +22,4 @@ spec:
         valueFrom:
           secretKeyRef:
             name: telegram-token   # секрет має бути lowercase
-            key: token   
+            key: token            
