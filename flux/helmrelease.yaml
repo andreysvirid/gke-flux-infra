@@ -7,18 +7,15 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: ./helm
+      chart: ./helm                # локальна папка з Chart.yaml
       sourceRef:
         kind: GitRepository
         name: flux-system
         namespace: flux-system
   values:
-    image:
-      repository: andreysvirid/kbot2
-      tag: "v1.0.0-4ce328a"
-    telegram:
-      token:
+    env:
+      - name: TELEGRAM_TOKEN       # сама змінна для контейнера
         valueFrom:
           secretKeyRef:
-            name: telegram-token
-            key: token          #kubectl create secret generic telegram-token \ --from-literal=token=7957704809:AAHq3Supo-FS4o1q8pqydBvdXY4GGwO3zeQ \-n demo-helm
+            name: telegram-token   # назва секрета (повинна бути lowercase)
+            key: token
