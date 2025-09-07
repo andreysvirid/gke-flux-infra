@@ -1,25 +1,22 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: bot-project2
-  namespace: demo-helm
+  namespace: demo-helm       # HelmRelease и секрет в одном namespace
 spec:
-  interval: 1m
+  interval: 3m
+  timeout: 10m
   chart:
     spec:
-      chart: ./helm          # шлях до Helm chart відносно GitRepository
+      chart: ./helm
       sourceRef:
         kind: GitRepository
         name: gke-flux-infra
-        namespace: flux-system
-  valuesFrom:
-    - kind: GitRepository
-      name: gke-flux-infra
-      path: ./helm/values.yaml     # values.yaml у Git з тегом образу і іншими значеннями
+        namespace: demo-helm    # namespace GitRepository
   values:
     env:
       - name: TELEGRAM_TOKEN
         valueFrom:
           secretKeyRef:
-            name: telegram-token   # секрет має бути lowercase
-            key: token            
+            name: telegram-token
+            key: token

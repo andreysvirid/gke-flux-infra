@@ -1,0 +1,174 @@
+1️⃣ Namespace
+metadata:
+  namespace: flux-system
+
+
+Ты указал flux-system, но ранее обсуждалось, что GitRepository и HelmRelease находятся в namespace demo-helm.
+
+Если секрет telegram-token находится в demo-helm, HelmRelease тоже должен быть в demo-helm.
+
+Исправление:
+
+metadata:
+  namespace: demo-helm
+
+2️⃣ Secret TELEGRAM_TOKEN
+secretKeyRef:
+  name: telegram-token
+  key: token
+
+
+Secret должен находиться в том же namespace, что и HelmRelease.
+
+Сейчас HelmRelease в flux-system, а секрет в demo-helm → Flux не сможет его найти.
+
+Исправление: HelmRelease должен быть в demo-helm, чтобы иметь доступ к секрету.
+
+3️⃣ GitRepository namespace
+sourceRef:
+  namespace: flux-system
+
+
+Если GitRepository был создан в demo-helm, здесь тоже нужно указать demo-helm.
+
+✅ Исправленный HelmRelease
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bot-project2
+  namespace: demo-helm       # HelmRelease и секрет в одном namespace
+spec:
+  interval: 3m
+  timeout: 10m
+  chart:
+    spec:
+      chart: ./helm
+      sourceRef:
+        kind: GitRepository
+        name: gke-flux-infra
+        namespace: demo-helm    # namespace GitRepository
+  values:
+    env:
+      - name: TELEGRAM_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: telegram-token
+            key: token
+
+
+Теперь:
+
+HelmRelease и GitRepository находятся в одном namespace (demo-helm).
+
+Секрет TELEGRAM_TOKEN доступен для HelmRelease.
+
+Flux сможет развернуть чарт из GitRepository без ошибок.
+
+Вы сказали:
+дальше команді
+ChatGPT сказал:
+
+После того как у тебя есть готовый HelmRelease и GitRepository в demo-helm, выполняем следующие команды пошагово:
+
+1️⃣ Применяем HelmRelease
+kubectl apply -f helmrelease.yaml
+
+
+Kubernetes создаст объект HelmRelease в namespace demo-helm.
+
+2️⃣ Принудительная синхронизация GitRepository (если ещё не синхронизирован)
+flux reconcile source git gke-flux-infra --namespace demo-helm
+
+
+Flux скачает репозиторий и создаст артефакт для HelmRelease.
+
+Проверяем готовность:
+
+flux get source git gke-flux-infra -n demo-helm
+
+
+Статус должен быть READY: True.
+
+3️⃣ Синхронизация HelmRelease с источником
+flux reconcile helmrelease bot-project2 --namespace demo-helm --with-source
+
+
+Flux применит чарт из GitRepository с указанными значениями и секретами.
+
+В логах можно увидеть процесс деплоя.
+
+4️⃣ Проверка статуса HelmRelease
+flux get helmrelease -n demo-helm
+
+
+READY: True → чарт успешно развернут.
+
+READY: False → смотрим условия и логи:
+
+kubectl describe helmrelease bot-project2 -n demo-helm
+kubectl logs deployment/helm-controller -n flux-system
+
+5️⃣ (Опционально) Следим за ресурсами в кластере
+kubectl get all -n demo-helm
+
+
+Проверяем, что все поды, сервисы и другие ресурсы из чарта созданы и работают.
+
+После этих шагов Flux полностью развернёт HelmRelease из GitHub репозитория в namespace demo-helm.
+
+Отлично! Если Flux уже развернул HelmRelease, теперь нужно проверить, что ресурсы действительно создались и работают как ожидалось.
+
+Вот пошагово:
+
+1️⃣ Проверка статуса HelmRelease
+flux get helmrelease -n demo-helm
+
+
+READY: True → чарт успешно развернут.
+
+READY: False → смотреть Status.Conditions через kubectl describe:
+
+kubectl describe helmrelease bot-project2 -n demo-helm
+
+
+Там видно, какие ресурсы Flux пытался создать и были ли ошибки.
+
+2️⃣ Проверка ресурсов, созданных чартом
+kubectl get all -n demo-helm
+
+
+Показывает поды, сервисы, деплойменты, configmap, secrets и т.д.
+
+Проверяй, что все поды в статусе Running и контейнеры READY.
+
+3️⃣ Проверка логов подов
+
+Если есть поды с приложением:
+
+kubectl logs <pod-name> -n demo-helm
+
+
+Убедись, что приложение стартовало без ошибок.
+
+Если подов несколько, можно смотреть логи по очереди или использовать -l для label:
+
+kubectl logs -n demo-helm -l app=bot-project2
+
+4️⃣ Проверка сервисов/ингрессов
+
+Если чарт создаёт сервис или ingress, проверяем доступность:
+
+kubectl get svc -n demo-helm
+kubectl get ingress -n demo-helm
+
+
+Можно использовать curl или браузер для проверки доступа.
+
+5️⃣ Проверка переменных окружения
+
+Если использовался секрет TELEGRAM_TOKEN, убедись, что контейнер получил его:
+
+kubectl exec -it <pod-name> -n demo-helm -- printenv | grep TELEGRAM_TOKEN
+
+
+Если всё выше ✅, значит Flux успешно развернул HelmRelease, и приложение работает.

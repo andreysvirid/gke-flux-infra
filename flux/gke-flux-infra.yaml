@@ -1,0 +1,12 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: gke-flux-infra
+  namespace: demo-helm
+spec:
+  interval: 1m
+  url: https://github.com/andreysvirid/gke-flux-infra.git
+  ref:
+    branch: develop          # вместо spec.branch
+#  secretRef:
+#    name: flux-git-auth      # если приватный репозиторий
