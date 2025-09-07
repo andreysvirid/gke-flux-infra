@@ -20,7 +20,7 @@ metadata:
 spec:
   chart:
     spec:
-      chart: ./helm
+      chart: ./flux
       sourceRef:
         kind: GitRepository
         name: flux-system
