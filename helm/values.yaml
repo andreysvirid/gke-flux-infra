@@ -1,4 +1,10 @@
 image:
   repository: andreysvirid/kbot2
-  tag: "v1.0.0-4ce328a"
-  pullPolicy: IfNotPresent
+  tag: "v1.0.0-31ed222"
+
+env:
+  - name: TELEGRAM_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: telegram-token
+        key: token

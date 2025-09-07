@@ -4,18 +4,15 @@ metadata:
   name: bot-project2
   namespace: demo-helm
 spec:
-  interval: 5m
+  interval: 1m
   chart:
     spec:
-      chart: ./helm                # локальна папка з Chart.yaml
+      chart: ./helm        # локальна папка з Chart.yaml
       sourceRef:
         kind: GitRepository
         name: flux-system
         namespace: flux-system
-  values:
-    env:
-      - name: TELEGRAM_TOKEN       # сама змінна для контейнера
-        valueFrom:
-          secretKeyRef:
-            name: telegram-token   # назва секрета (повинна бути lowercase)
-            key: token
+  valuesFrom:
+    - kind: GitRepository
+      name: flux-system
+      path: ./values.yaml  # тут лежить твій values файл у Git

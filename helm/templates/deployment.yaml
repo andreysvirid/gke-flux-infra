@@ -17,10 +17,18 @@ spec:
       containers:
         - name: kbot
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           ports:
             - containerPort: 80
           env:
-            {{- if .Values.env }}
-            {{- toYaml .Values.env | nindent 12 }}
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              {{- if .value }}
+              value: {{ .value }}
+              {{- end }}
+              {{- if .valueFrom.secretKeyRef }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .valueFrom.secretKeyRef.name }}
+                  key: {{ .valueFrom.secretKeyRef.key }}
+              {{- end }}
             {{- end }}
