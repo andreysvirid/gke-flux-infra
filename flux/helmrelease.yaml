@@ -1,7 +1,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: bot-project2
+  name: kbot
   namespace: demo-helm
 spec:
   interval: 3m

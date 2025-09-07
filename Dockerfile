@@ -23,4 +23,8 @@ WORKDIR /app
 # Копіюємо готовий бінарник
 COPY --from=builder /app/kbot .
 
+FROM alpine:3.19
+RUN apk add --no-cache ca-certificates
+COPY --from=builder /app/kbot /app/
+
 CMD ["./kbot"]
