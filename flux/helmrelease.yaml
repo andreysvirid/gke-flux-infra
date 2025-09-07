@@ -2,7 +2,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: bot-project2
-  namespace: demo-helm       # HelmRelease и секрет в одном namespace
+  namespace: demo-helm
 spec:
   interval: 3m
   timeout: 10m
@@ -12,8 +12,11 @@ spec:
       sourceRef:
         kind: GitRepository
         name: gke-flux-infra
-        namespace: demo-helm    # namespace GitRepository
+        namespace: demo-helm
   values:
+    image:
+      repository: andreysvirid/kbot2
+      tag: v1.0.1   # <--- здесь указываешь новый тег
     env:
       - name: TELEGRAM_TOKEN
         valueFrom:
