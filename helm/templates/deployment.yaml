@@ -5,10 +5,10 @@ metadata:
   labels:
     app: kbot
 spec:
-  replicas: 1
+  replicas: 1                       # кількість Podів
   selector:
     matchLabels:
-      app: kbot
+      app: kbot                     # Deployment знаходить Podи по лейблу
   template:
     metadata:
       labels:
@@ -16,9 +16,11 @@ spec:
     spec:
       containers:
         - name: kbot
+          # Беремо образ із values.yaml
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 80
+          # Пробіг по env змінних з values.yaml
           env:
             {{- range .Values.env }}
             - name: {{ .name }}

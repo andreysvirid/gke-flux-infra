@@ -1,10 +1,11 @@
+# values.yaml - центральне місце для всіх змінних
 image:
-  repository: andreysvirid/kbot2
-  tag: "v1.0.0-31ed222"
+  repository: andreysvirid/kbot2   # образ Docker
+  tag: "v1.0.0-31ed222"           # тег образу, оновлюється у Git
 
 env:
-  - name: TELEGRAM_TOKEN
+  - name: TELEGRAM_TOKEN           # змінна для контейнера
     valueFrom:
       secretKeyRef:
-        name: telegram-token
-        key: token
+        name: telegram-token      # ім'я Kubernetes Secret (нижній регістр)
+        key: token                # ключ у Secret

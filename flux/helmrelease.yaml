@@ -7,7 +7,7 @@ spec:
   interval: 1m
   chart:
     spec:
-      chart: ./helm        # локальна папка з Chart.yaml
+      chart: ./helm          # шлях до Helm chart відносно GitRepository
       sourceRef:
         kind: GitRepository
         name: flux-system
@@ -15,4 +15,11 @@ spec:
   valuesFrom:
     - kind: GitRepository
       name: flux-system
-      path: ./values.yaml  # тут лежить твій values файл у Git
+      path: ./values.yaml     # values.yaml у Git з тегом образу і іншими значеннями
+  values:
+    env:
+      - name: TELEGRAM_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: telegram-token   # секрет має бути lowercase
+            key: token   
