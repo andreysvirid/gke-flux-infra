@@ -11,7 +11,8 @@ spec:
       sourceRef:
         kind: GitRepository
         name: flux-system
+        namespace: flux-system
   values:
     image:
       repository: andreysvirid/kbot2
-      tag: "v1.0.0-4ce328a"
+      tag: "v1.0.0-4ce328a"    
