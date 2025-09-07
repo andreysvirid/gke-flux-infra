@@ -15,7 +15,7 @@ spec:
   valuesFrom:
     - kind: GitRepository
       name: flux-system
-      path: ./values.yaml     # values.yaml у Git з тегом образу і іншими значеннями
+      path: ./helm/values.yaml     # values.yaml у Git з тегом образу і іншими значеннями
   values:
     env:
       - name: TELEGRAM_TOKEN
