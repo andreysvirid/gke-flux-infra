@@ -1,0 +1,5 @@
+kubectl apply -f ./flux/gke-flux-infra.yaml
+kubectl apply -f ./flux/helmrelease.yaml
+flux reconcile gitrepository gke-flux-infra --namespace demo-helm
+flux reconcile helmrelease bot-project2 --namespace demo-helm --with-source
+flux get helmrelease -n demo-helm
