@@ -1,0 +1,113 @@
+# GKE + FluxCD + GitHub Actions + Helm (kbot demo)
+
+Цей проект демонструє повний GitOps-процес: розгортання кластеру GKE через Terraform, встановлення FluxCD, налаштування GitRepository та HelmRelease для PET-проєкту kbot, а також автоматичне оновлення контейнерного образу через GitHub Actions.
+
+---
+
+## Розгортання кластера та Flux через Terraform
+
+
+Порядок дій:
+
+```bash
+
+1. Створення репозиторію на GitHub:
+   https://github.com/andreysvirid/gke-flux-infra.git
+
+
+2. Ініціалізація Terraform:
+ terraform init
+ terraform plan -var="github_token=$GITHUB_TOKEN"
+ terraform apply -var="github_token=$GITHUB_TOKEN" -auto-approve
+
+3. HelmRelease для kbot
+ apiVersion: helm.toolkit.fluxcd.io/v2
+ kind: HelmRelease
+ metadata:
+   name: kbot
+   namespace: demo-helm
+ spec:
+   releaseName: kbot
+   interval: 1m
+   chart:
+     spec:
+       chart: ./charts/kbot2
+       sourceRef:
+         kind: GitRepository
+         name: gke-flux-infra
+         namespace: flux-system
+   values:
+     image:
+       repository: andreysvirid/kbot2
+       tag: "v1.0.0-cdc3eb0"
+
+ git checkout develop
+ git add clusters/dev/kbot-helmrelease.yaml
+ git commit -m "Add HelmRelease for kbot"
+ git push origin develop
+
+4. Flux автоматично застосує цей HelmRelease у кластері після пушу змін у Git.
+Встановлення Flux у кластері
+ kubectl create namespace flux-system
+ flux install \
+   --namespace=flux-system \
+   --components=source-controller,kustomize-controller,helm-controller,notification-controller
+Підключення Flux до GitHub-репозиторію
+ export GITHUB_USER=andreysvirid
+ export GITHUB_REPO=gke-flux-infra
+ export GITHUB_TOKEN=<тут_твій_token>
+
+ flux bootstrap github \
+   --owner=$GITHUB_USER \
+   --repository=$GITHUB_REPO \
+   --branch=develop \
+   --path=./clusters/dev \
+   --personal
+ Ця команда: створить у кластері всі ресурси Flux, налаштує GitRepository у flux-system, підключить каталог clusters/dev як джерело манифестів.
+
+Перевірка підключення GitRepository
+ kubectl get gitrepository -n flux-system
+ kubectl describe gitrepository gke-flux-infra -n flux-system
+
+Перевірка синхронізації
+ flux get kustomizations -A
+ або
+ flux reconcile kustomization flux-system --with-source
+
+5. CI/CD через GitHub Actions
+У репо (.github/workflows/build.yaml) додаєш пайплайн, який:
+будує Docker образ
+пушить його на DockerHub
+оновлює тег у values.yaml/HelmRelease
+комітить у develop
+Приклад запуску локально (для перевірки):
+docker build -t andreysvirid/kbot2:$(git rev-parse --short HEAD) .
+docker push andreysvirid/kbot2:$(git rev-parse --short HEAD)
+
+
+6. Перевірка
+# Перевірити HelmRelease
+kubectl get helmrelease kbot -n demo-helm -o yaml | grep -A3 "image:"
+# Перевірити Deployment
+kubectl get deployment kbot -n demo-helm -o yaml | grep image:
+# Перевірити Pod
+kubectl get pods -n demo-helm -l app=kbot
+kubectl describe pod -n demo-helm <pod-name> | grep -i image:
+
+
+
+7. Результат
+✅ Розгорнутий кластер GKE
+✅ Встановлений Flux
+✅ Налаштований GitRepository та HelmRelease для kbot
+✅ Зміни в коді → GitHub Actions → новий Docker-образ → Flux автоматично оновлює застосунок у Kubernetes 🚀
+⚠️ Приватний ключ і не показується.
+
+✅ У результаті:
+
+Terraform створює GKE + FluxCD
+FluxCD підключає репо
+HelmRelease у develop деплоїть kbot
+GitHub Actions оновлює тег образу і пушить у Git
+Flux автоматично підтягує новий образ у кластер
+
