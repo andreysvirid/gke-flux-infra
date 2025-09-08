@@ -8,19 +8,19 @@ spec:
   timeout: 5m
   chart:
     spec:
-      chart: ./helm          # путь к Helm-чарту внутри репозитория
+      chart: ./helm
       sourceRef:
         kind: GitRepository
         name: gke-flux-infra
         namespace: demo-helm
-      version: '*'            # версия чарта
+      version: '*'
   values:
     image:
       repository: andreysvirid/kbot2
-#      tag: v1.0.1
-#    env:
-#      - name: TELEGRAM_TOKEN
-#        valueFrom:
-#          secretKeyRef:
-#           name: telegram-token
-#           key: token
+      tag: v1.0.0-cdc3eb0
+    env:
+      - name: TELEGRAM_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: telegram-token
+            key: token

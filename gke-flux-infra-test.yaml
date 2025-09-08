@@ -1,0 +1,45 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  annotations:
+    reconcile.fluxcd.io/requestedAt: "2025-09-07T17:22:24.688085384+02:00"
+  creationTimestamp: "2025-09-07T12:46:32Z"
+  finalizers:
+  - finalizers.fluxcd.io
+  generation: 3
+  labels:
+    kustomize.toolkit.fluxcd.io/name: flux-system
+    kustomize.toolkit.fluxcd.io/namespace: flux-system
+  name: gke-flux-infra
+  namespace: demo-helm
+  resourceVersion: "1757343148716735022"
+  uid: b8c482bf-c441-4636-b0bb-4772234193e5
+spec:
+  interval: 1m
+  ref:
+    branch: develop
+  timeout: 60s
+  url: https://github.com/andreysvirid/gke-flux-infra.git
+status:
+  artifact:
+    digest: sha256:c1347e3cd507363cb639b4ad018712e62d68288aa05bddb1ae2e68e39b05d533
+    lastUpdateTime: "2025-09-08T14:52:28Z"
+    path: gitrepository/demo-helm/gke-flux-infra/3772d95ffe20ef1781b8432ac18e5efaf217dc9b.tar.gz
+    revision: develop@sha1:3772d95ffe20ef1781b8432ac18e5efaf217dc9b
+    size: 72852
+    url: http://source-controller.flux-system.svc.cluster.local./gitrepository/demo-helm/gke-flux-infra/3772d95ffe20ef1781b8432ac18e5efaf217dc9b.tar.gz
+  conditions:
+  - lastTransitionTime: "2025-09-08T14:52:28Z"
+    message: stored artifact for revision 'develop@sha1:3772d95ffe20ef1781b8432ac18e5efaf217dc9b'
+    observedGeneration: 3
+    reason: Succeeded
+    status: "True"
+    type: Ready
+  - lastTransitionTime: "2025-09-08T14:52:28Z"
+    message: stored artifact for revision 'develop@sha1:3772d95ffe20ef1781b8432ac18e5efaf217dc9b'
+    observedGeneration: 3
+    reason: Succeeded
+    status: "True"
+    type: ArtifactInStorage
+  lastHandledReconcileAt: "2025-09-07T17:22:24.688085384+02:00"
+  observedGeneration: 3
