@@ -20,8 +20,7 @@ terraform init
 terraform plan -var="github_token=$GITHUB_TOKEN"
 terraform apply -var="github_token=$GITHUB_TOKEN" -auto-approve
 🔧 Налаштування HelmRelease для kbot
-yaml
-Копировать код
+
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -43,13 +42,9 @@ spec:
       tag: "v1.0.0-cdc3eb0"
 ⚠️ Перед застосуванням переконайся, що неймспейс створений:
 
-bash
-Копировать код
 kubectl create namespace demo-helm
 Застосування у develop:
 
-bash
-Копировать код
 git checkout develop
 git add clusters/dev/kbot-helmrelease.yaml
 git commit -m "Add HelmRelease for kbot"
@@ -57,15 +52,13 @@ git push origin develop
 Flux автоматично застосує HelmRelease у кластері після пушу.
 
 📦 Встановлення Flux у кластері
-bash
-Копировать код
+
 kubectl create namespace flux-system
 flux install \
   --namespace=flux-system \
   --components=source-controller,kustomize-controller,helm-controller,notification-controller
 🔗 Підключення Flux до GitHub-репозиторію
-bash
-Копировать код
+
 export GITHUB_USER=andreysvirid
 export GITHUB_REPO=gke-flux-infra
 export GITHUB_TOKEN=<тут_твій_token>
@@ -79,14 +72,10 @@ flux bootstrap github \
 Ця команда:
 
 створить у кластері всі ресурси Flux
-
 налаштує GitRepository у flux-system
-
 підключить каталог clusters/dev як джерело маніфестів
 
 ✅ Перевірка Flux
-bash
-Копировать код
 # GitRepository
 kubectl get gitrepository -n flux-system
 kubectl describe gitrepository gke-flux-infra -n flux-system
@@ -97,8 +86,6 @@ flux reconcile kustomization flux-system --with-source
 ⚙️ CI/CD через GitHub Actions
 У репозиторії створюємо .github/workflows/build.yaml:
 
-yaml
-Копировать код
 name: Build & Deploy kbot
 
 on:
@@ -137,78 +124,24 @@ jobs:
           git push origin develop
 🔑 Необхідні secrets:
 DOCKERHUB_USERNAME
-
 DOCKERHUB_TOKEN
-
 GITHUB_TOKEN (вбудований у GitHub, можна використовувати напряму)
 
 🔍 Перевірка розгортання
-bash
-Копировать код
+
 # HelmRelease
 kubectl get helmrelease kbot -n demo-helm -o yaml | grep -A3 "image:"
-
 # Deployment
 kubectl get deployment kbot -n demo-helm -o yaml | grep image:
-
 # Pod
 kubectl get pods -n demo-helm -l app=kbot
 kubectl describe pod -n demo-helm <pod-name> | grep -i image:
+
+
 🎯 Результат
 ✅ Розгорнутий кластер GKE
-
 ✅ Встановлений Flux
-
 ✅ Налаштований GitRepository та HelmRelease для kbot
-
 ✅ GitHub Actions будує Docker-образ, пушить у DockerHub, оновлює HelmRelease
-
 ✅ Flux автоматично підтягує новий образ у кластер 🚀
 
-🗺️ GitOps-потік
-scss
-Копировать код
-   ┌─────────────┐
-   │  Developer  │
-   │   (commit)  │
-   └──────┬──────┘
-          │ push
-          ▼
-   ┌─────────────┐
-   │   GitHub    │
-   │  (infra repo)│
-   └──────┬──────┘
-          │ triggers
-          ▼
-   ┌─────────────────┐
-   │ GitHub Actions  │
-   │  (build image,  │
-   │   push to hub,  │
-   │ update HelmRelease) 
-   └──────┬──────────┘
-          │ git push (develop)
-          ▼
-   ┌─────────────┐
-   │   FluxCD    │
-   │ (sync repo) │
-   └──────┬──────┘
-          │ apply manifests
-          ▼
-   ┌─────────────┐
-   │    GKE      │
-   │ (kbot app)  │
-   └─────────────┘
-
-## 🗺️ GitOps-потік (Mermaid)
-
-```mermaid
-flowchart TD
-    A[Developer<br/>(commit & push)] --> B[GitHub<br/>(infra repo)]
-    B --> C[GitHub Actions<br/>(build, push image, update HelmRelease)]
-    C -->|git push develop| B
-    B --> D[FluxCD<br/>(sync repo)]
-    D --> E[GKE<br/>(kbot app)]
-    C --> F[DockerHub<br/>(store image)]
-    F --> E
-
-    
