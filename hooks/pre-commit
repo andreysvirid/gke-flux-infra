@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e
+
+# Опція активації через git config
+ENABLED=$(git config --bool gitleaks.enable || echo "false")
+if [ "$ENABLED" != "true" ]; then
+  echo "[gitleaks] Hook disabled. Enable with:"
+  echo "  git config gitleaks.enable true"
+  exit 0
+fi
+
+# Перевіряємо наявність gitleaks
+if ! command -v gitleaks &> /dev/null; then
+  echo "[gitleaks] Not found. Installing..."
+  bash "$(git rev-parse --show-toplevel)/scripts/install_gitleaks.sh"
+fi
+
+# Запускаємо перевірку
+echo "[gitleaks] Scanning staged changes..."
+if ! gitleaks detect --staged --no-banner; then
+  echo "[gitleaks] ❌ Secrets detected! Commit aborted."
+  exit 1
+fi
+
+echo "[gitleaks] ✅ No secrets found."
+exit 0
