@@ -72,14 +72,14 @@ jobs:
       - name: Update Helm chart
         run: |
           echo "Using IMAGE_TAG=${IMAGE_TAG}"
-          yq -i ".image.repository = \"${IMAGE_REPOSITORY}\" | .image.tag = \"${IMAGE_TAG}\"" flux/kbot/values.yaml
+          yq -i ".image.repository = \"${IMAGE_REPOSITORY}\" | .image.tag = \"${IMAGE_TAG}\"" /kbot/values.yaml
 
       # 4️⃣ Commit Helm chart changes
       - name: Commit Helm chart changes
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add helm/values.yaml
+          git add kbot/values.yaml
           git commit -m "ci: update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB2_TOKEN }}@github.com/andreysvirid/gke-flux-infra.git
           git push origin develop
