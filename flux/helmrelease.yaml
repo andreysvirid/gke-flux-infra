@@ -6,19 +6,11 @@ metadata:
 spec:
   chart:
     spec:
-      chart: kbot
-      version: 0.1.0
+      chart: .
       sourceRef:
-        kind: HelmRepository
-        name: kbot-repo
-        namespace: flux-system
-  interval: 5m
+        kind: GitRepository
+        name: flux-system
+        interval: 1m
+  interval: 1m
   values:
-    image:
-      repository: andreysvirid/kbot2
-      tag: v1.0.1
-    telegramToken:
-      valueFrom:
-        secretKeyRef:
-          name: kbot-secret
-          key: TELEGRAM_TOKEN
+    telegramToken: "TEST"   # поки без секрету

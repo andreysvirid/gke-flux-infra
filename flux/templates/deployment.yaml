@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kbot
+  labels:
+    app: kbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kbot
+  template:
+    metadata:
+      labels:
+        app: kbot
+    spec:
+      containers:
+        - name: kbot
+          image: andreysvirid/kbot2:v1.0.0
+          env:
+            - name: TELEGRAM_TOKEN
+              value: "{{ .Values.telegramToken }}"
+          ports:
+            - containerPort: 80

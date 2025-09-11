@@ -1,15 +1,13 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
-resources:
-  - helmrelease.yaml      # твій HelmRelease для kbot
-  - gitrepository.yaml    # джерело чарта/коду
-  - secret-telegram.enc.yaml #  
-prune: true
-interval: 1m
-
-secretGenerator:
-  - name: kbot-secret
-    files:
-      - TELEGRAM_TOKEN=secret-telegram.enc.yaml
-generatorOptions:
-  disableNameSuffixHash: true
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval: 1m
+  path: ./flux        # Вказуємо відносний шлях до папки flux
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  targetNamespace: demo-helm
