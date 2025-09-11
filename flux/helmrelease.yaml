@@ -4,13 +4,17 @@ metadata:
   name: kbot
   namespace: demo-helm
 spec:
+  interval: 1m
   chart:
     spec:
-      chart: .
+      chart:  ./charts/kbot  # або ім’я чарта, якщо з HelmRepository
       sourceRef:
         kind: GitRepository
         name: flux-system
-        interval: 1m
-  interval: 1m
+        namespace: flux-system
   values:
-    telegramToken: "TEST"   # поки без секрету
+    image:
+      repository: andreysvirid/kbot2
+      tag: v1.0.0-c937981
+    service:
+      port: 80
