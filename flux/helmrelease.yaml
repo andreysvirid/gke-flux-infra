@@ -4,23 +4,18 @@ metadata:
   name: kbot
   namespace: demo-helm
 spec:
-  interval: 3m
-  timeout: 5m
+  interval: 5m
   chart:
     spec:
-      chart: ./helm          # путь к Helm-чарту внутри репозитория
+      chart: kbot
+      version: 0.1.0
       sourceRef:
-        kind: GitRepository
-        name: gke-flux-infra
-        namespace: demo-helm
-      version: '*'            # версия чарта
+        kind: OCIRepository
+        name: kbot-oci
+        namespace: flux-system
   values:
     image:
       repository: andreysvirid/kbot2
-#      tag: v1.0.1
-#    env:
-#      - name: TELEGRAM_TOKEN
-#        valueFrom:
-#          secretKeyRef:
-#           name: telegram-token
-#           key: token
+      tag: "v1.0.0-05e2d05"
+    env:
+      TELEGRAM_TOKEN: $TELEGRAM_TOKEN
