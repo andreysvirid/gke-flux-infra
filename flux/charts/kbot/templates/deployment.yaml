@@ -15,10 +15,10 @@ spec:
         app: kbot
     spec:
       containers:
-        - name: kbot
-          image: andreysvirid/kbot2:v1.0.0
-          env:
-            - name: TELEGRAM_TOKEN
-              value: "{{ .Values.telegramToken }}"
-          ports:
-            - containerPort: 80
+      - name: kbot
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        - name: TELEGRAM_TOKEN
+          value: {{ .Values.env.TELEGRAM_TOKEN | quote }}               

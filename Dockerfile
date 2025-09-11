@@ -21,6 +21,9 @@ FROM alpine:3.18
 
 WORKDIR /app
 
+# Встановлюємо сертифікати
+RUN apk add --no-cache ca-certificates
+
 # Копіюємо бінарник
 COPY --from=builder /app/kbot .
 
