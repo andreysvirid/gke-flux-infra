@@ -1,4 +1,4 @@
-BINARY=kbot
+BINARY=kbot1
 
 build:
 	go build -o $(BINARY) ./main.go

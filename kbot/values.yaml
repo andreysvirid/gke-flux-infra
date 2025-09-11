@@ -2,7 +2,7 @@
 values:
   image:
     repository: andreysvirid/kbot2
-    tag: "v1.0.0-05e2d05"
+    tag: "v1.0.1"
   service:
     port: 8080
   env:

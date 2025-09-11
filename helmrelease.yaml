@@ -16,10 +16,10 @@ spec:
   values:
     image:
       repository: andreysvirid/kbot2
-      tag: "v1.0.0-05e2d05"
+      tag: "v1.0.1"
     env:
     TELEGRAM_TOKEN:
       valueFrom:
         secretKeyRef:
           name: kbot-secret
-          key: TELEGRAM_TOKEN      
+          key: TELEGRAM_TOKEN
