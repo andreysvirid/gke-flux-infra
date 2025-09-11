@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: kbot
+  namespace: demo-helm
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: kbot
+      version: 0.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: kbot-repo
+        namespace: flux-system
+  values:
+    image:
+      repository: andreysvirid/kbot2
+      tag: "v1.0.0-05e2d05"
+    env:
+      TELEGRAM_TOKEN: $TELEGRAM_TOKEN
