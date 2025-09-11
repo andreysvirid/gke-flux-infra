@@ -1,8 +1,16 @@
 # values.yaml - центральне місце для всіх змінних
-image:
-  repository: andreysvirid/kbot2   # образ Docker
-  tag: "v1.0.0-b0b2305"           # тег образу, оновлюється у Git
-
+values:
+  image:
+    repository: andreysvirid/kbot2
+    tag: "v1.0.0-05e2d05"
+  service:
+    port: 8080
+  env:
+    TELEGRAM_TOKEN:
+      valueFrom:
+        secretKeyRef:
+          name: kbot-secret
+          key: TELEGRAM_TOKEN
 #env:
 #  - name: TELEGRAM_TOKEN           # змінна для контейнера
 #    valueFrom:
