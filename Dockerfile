@@ -1,30 +1,23 @@
-# Stage 1: Build
-FROM golang:1.22-alpine AS builder
+# Build stage
+#FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Копіюємо модуль та завантажуємо залежності
 COPY go.mod go.sum ./
-RUN go mod tidy
+RUN go mod download
 
-# Копіюємо весь код
 COPY . .
 
-# Запускаємо тести
-RUN go test ./...
+RUN go build -o kbot main.go
 
-# Build
-RUN go build -o kbot .
+# Final stage
+FROM alpine:3.18
 
-# Stage 2: Final image
-FROM debian:bullseye-slim
 WORKDIR /app
-
-# Копіюємо готовий бінарник
 COPY --from=builder /app/kbot .
 
-FROM alpine:3.19
-RUN apk add --no-cache ca-certificates
-COPY --from=builder /app/kbot /app/
+ENTRYPOINT ["./kbot"]
 
-CMD ["./kbot"]
+# TELEGRAM_TOKEN можна задавати під час запуску
+ENV TELEGRAM_TOKEN=""

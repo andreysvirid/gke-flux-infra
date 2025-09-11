@@ -1,7 +1,7 @@
 BINARY=kbot
 
 build:
-	go build -o $(BINARY) ./cmd/main.go
+	go build -o $(BINARY) ./main.go
 
 run:
 	./$(BINARY)
