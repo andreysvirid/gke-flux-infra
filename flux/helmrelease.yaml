@@ -4,17 +4,21 @@ metadata:
   name: kbot
   namespace: demo-helm
 spec:
-  releaseName: kbot
-  interval: 1m
   chart:
     spec:
       chart: kbot
-      version: 2.1.0
+      version: 0.1.0
       sourceRef:
         kind: HelmRepository
         name: kbot-repo
         namespace: flux-system
-  valuesFrom:
-    - secretKeyRef:
-        name: kbot-secret
-        key: TELEGRAM_TOKEN
+  interval: 5m
+  values:
+    image:
+      repository: andreysvirid/kbot2
+      tag: v1.0.1
+    telegramToken:
+      valueFrom:
+        secretKeyRef:
+          name: kbot-secret
+          key: TELEGRAM_TOKEN

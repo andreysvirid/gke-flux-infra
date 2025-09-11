@@ -3,5 +3,13 @@ kind: Kustomization
 resources:
   - helmrelease.yaml      # твій HelmRelease для kbot
   - gitrepository.yaml    # джерело чарта/коду
+  - secret-telegram.enc.yaml #  
 prune: true
 interval: 1m
+
+secretGenerator:
+  - name: kbot-secret
+    files:
+      - TELEGRAM_TOKEN=secret-telegram.enc.yaml
+generatorOptions:
+  disableNameSuffixHash: true
