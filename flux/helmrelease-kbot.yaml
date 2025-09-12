@@ -13,7 +13,24 @@ spec:
         name: kbot-repo
         namespace: flux-system
       version: "*"
-  valuesFrom:
-    - kind: GitRepository
-      name: kbot-repo
-      path: ./charts/kbot/values.yaml
+  values:
+    # Берём тег образа прямо из Git чарта
+    image:
+      repository: andreysvirid/kbot2
+      tag: "v1.0.0-d9dc9cb"   # актуальный тег из values.yaml чарта
+    service:
+      type: ClusterIP
+      port: 80
+    serviceAccount:
+      create: false
+    ingress:
+      enabled: false
+    autoscaling:
+      enabled: false
+    env:
+      - name: TELEGRAM_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: telegram-token
+            key: token
+      
