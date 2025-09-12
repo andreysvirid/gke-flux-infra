@@ -1,23 +1,18 @@
 image:
   repository: andreysvirid/kbot2
-  tag: "v1.0.0-d9dc9cb"  # сюда GitHub Action будет писать новый тег
-
+  tag: "v1.0.0-610715b" # сюда GitHub Action будет писать новый тег
 env:
   - name: TELEGRAM_TOKEN
     valueFrom:
       secretKeyRef:
         name: telegram-token
         key: token
-
 service:
   type: ClusterIP
   port: 80
-
 serviceAccount:
   create: false
-
 ingress:
   enabled: false
-
 autoscaling:
   enabled: false
