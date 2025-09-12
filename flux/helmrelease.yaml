@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: kbot
@@ -7,14 +7,20 @@ spec:
   interval: 1m
   chart:
     spec:
-      chart:  ./charts/kbot  # або ім’я чарта, якщо з HelmRepository
+      chart: ./flux/charts/kbot        # шлях до твого Helm-чарту всередині репо
       sourceRef:
         kind: GitRepository
-        name: flux-system
+        name: flux-system         # ім’я GitRepository ресурсу у flux-system
         namespace: flux-system
   values:
     image:
       repository: andreysvirid/kbot2
-      tag: v1.0.0-c937981
+      tag: v1.0.4                  # останній робочий тег
     service:
       port: 80
+    env:
+      - name: TELEGRAM_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: kbot-secret     # Secret з токеном
+            key: TELEGRAM_TOKEN      
