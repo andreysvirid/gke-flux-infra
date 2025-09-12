@@ -17,24 +17,13 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ if .Values.serviceAccount.create }}{{ include "kbot.fullname" . }}{{ else }}"default"{{ end }}
-      containers:
+      containers:   # <<< важливо, containers має бути тут, під spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
-            {{- if .Values.env }}
-            {{- range .Values.env }}
-            - name: {{ .name }}
-              {{- if .value }}
-              value: {{ .value | quote }}
-              {{- end }}
-              {{- if .valueFrom.secretKeyRef }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .valueFrom.secretKeyRef.name }}
-                  key: {{ .valueFrom.secretKeyRef.key }}
-              {{- end }}
-            {{- end }}
-            {{- end }}
+          {{- if .Values.env }}
+          {{ toYaml .Values.env | nindent 12 }}
+          {{- end }}

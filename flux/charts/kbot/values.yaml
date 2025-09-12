@@ -9,8 +9,8 @@ image:
 service:
   port: 80
 
-#serviceAccount:
-#  create: true
+serviceAccount:
+  create: false
 
 env:
   - name: TELEGRAM_TOKEN           # змінна для контейнера
