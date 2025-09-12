@@ -1,8 +1,3 @@
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: kbot
-  namespace: demo-helm
 spec:
   interval: 1m
   chart:
@@ -16,9 +11,9 @@ spec:
   values:
     image:
       repository: andreysvirid/kbot2
-      tag: v1.0.4  # Flux підхопить новий тег після коміту workflow
+      tag: v1.0.4
     serviceAccount:
-      create: true
+      create: true       # ⚡ додаємо це, щоб шаблон працював
     env:
       - name: TELEGRAM_TOKEN
         valueFrom:
