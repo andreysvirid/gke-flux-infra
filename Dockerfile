@@ -1,37 +1,26 @@
-# Stage 1: Build
-FROM golang:1.24-alpine AS builder
-
+# -------- Stage 1: Build --------
+FROM golang:1.22 AS builder
 WORKDIR /app
 
-# Встановлюємо залежності для збірки (make, git і т.д.)
-RUN apk add --no-cache git build-base
-
-# Копіюємо модуль та завантажуємо залежності
+# Скопіювати файли залежностей і завантажити їх
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Копіюємо код
+# Скопіювати решту коду
 COPY . .
 
 # Статична збірка бінарника
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o kbot main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o kbot .
 
-# Stage 2: Final image
-FROM alpine:3.18
-
+# -------- Stage 2: Runtime --------
+FROM alpine:3.20
 WORKDIR /app
 
-# Встановлюємо сертифікати
-RUN apk add --no-cache ca-certificates
-
-# Копіюємо бінарник
+# Скопіювати тільки бінарник
 COPY --from=builder /app/kbot .
 
-# Встановлюємо сертифікати для TLS
+# Додати сертифікати для HTTPS-запитів (Telegram API)
 RUN apk add --no-cache ca-certificates
 
-# TELEGRAM_TOKEN можна задавати під час запуску
-ENV TELEGRAM_TOKEN=""
-
-# Запуск бота
-ENTRYPOINT ["./kbot"]
+# Запуск
+CMD ["./kbot"]
