@@ -7,20 +7,15 @@ spec:
   interval: 1m
   chart:
     spec:
-      chart: ./charts/kbot        # шлях до твого Helm-чарту всередині репо
+      chart: kbot                  # назва чарту всередині папки charts
       sourceRef:
         kind: GitRepository
-        name: flux-system         # ім’я GitRepository ресурсу у flux-system
+        name: kbot-repo
         namespace: flux-system
+      version: '*'                 # можна конкретний тег чарту або '*'
   values:
     image:
       repository: andreysvirid/kbot2
-      tag: v1.0.4                  # останній робочий тег
+      tag: v1.0.4
     service:
       port: 80
-    env:
-      - name: TELEGRAM_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: kbot-secret     # Secret з токеном
-            key: TELEGRAM_TOKEN      

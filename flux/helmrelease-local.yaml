@@ -1,0 +1,19 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kbot
+  namespace: demo-helm
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./charts/kbot       # локальний шлях до Helm-чарту
+      sourceRef:
+        kind: HelmRepository
+        name: local                 # тут можна поставити будь-яке ім’я, т.к. Git не використовується
+  values:
+    image:
+      repository: andreysvirid/kbot2
+      tag: v1.0.4                  # тег локально зібраного Docker-образу
+    service:
+      port: 80         
