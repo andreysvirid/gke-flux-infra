@@ -7,7 +7,7 @@ spec:
   interval: 1m
   chart:
     spec:
-      chart: ./flux/charts/kbot        # шлях до твого Helm-чарту всередині репо
+      chart: ./charts/kbot        # шлях до твого Helm-чарту всередині репо
       sourceRef:
         kind: GitRepository
         name: flux-system         # ім’я GitRepository ресурсу у flux-system
