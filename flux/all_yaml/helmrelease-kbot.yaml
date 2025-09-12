@@ -26,3 +26,4 @@ spec:
       enabled: false
     autoscaling:
       enabled: false   # додаємо, щоб HPA не створювався  
+      
