@@ -1,24 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kbot
+  name: {{ include "kbot.fullname" . }}
   labels:
-    app: kbot
+    {{- include "kbot.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kbot
+      app.kubernetes.io/name: {{ include "kbot.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: kbot
+        app.kubernetes.io/name: {{ include "kbot.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      containers:
-      - name: kbot
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        ports:
-        - containerPort: {{ .Values.service.port }}
-        env:
-        - name: TELEGRAM_TOKEN
-          value: {{ .Values.env.TELEGRAM_TOKEN | quote }}               
+      serviceAccountName: {{ if .Values.serviceAccount.create }}{{ include "kbot.fullname" . }}{{ else }}"default"{{ end }}
+      containers:   # <<< важливо, containers має бути тут, під spec:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+          {{- if .Values.env }}
+          {{ toYaml .Values.env | nindent 12 }}
+          {{- end }}

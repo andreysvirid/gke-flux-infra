@@ -3,8 +3,8 @@ image:
   repository: andreysvirid/kbot2   # образ Docker
   tag: "v1.0.0-8557bd9"           # тег образу, оновлюється у Git
 
-env:
-  TELEGRAM_TOKEN: "7957704809:AAHq3Supo-FS4o1q8pqydBvdXY4GGwO3zeQ"
+#env:
+#  TELEGRAM_TOKEN: "7957704809:AAHq3Supo-FS4o1q8pqydBvdXY4GGwO3zeQ"
 
 service:
   port: 80
@@ -12,9 +12,9 @@ service:
 #serviceAccount:
 #  create: true
 
-#env:
-#  - name: TELEGRAM_TOKEN           # змінна для контейнера
-#    valueFrom:
-#      secretKeyRef:
-#        name: telegram-token      # ім'я Kubernetes Secret (нижній регістр)
-#        key: token                # ключ у Secret
+env:
+  - name: TELEGRAM_TOKEN           # змінна для контейнера
+    valueFrom:
+      secretKeyRef:
+        name: telegram-token      # ім'я Kubernetes Secret (нижній регістр)
+        key: token                # ключ у Secret

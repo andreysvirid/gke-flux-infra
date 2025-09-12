@@ -26,3 +26,9 @@ spec:
       enabled: false
     autoscaling:
       enabled: false   # додаємо, щоб HPA не створювався  
+    env:
+      - name: TELEGRAM_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: telegram-token  # ім’я секрету в Kubernetes
+            key: token             # ключ у секреті      
