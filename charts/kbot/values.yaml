@@ -5,16 +5,13 @@
 #replicaCount: 1
 
 replicaCount: 2
-
 image:
   repository: andreysvirid/kbot
-  tag: latest
+  tag: ""
   pullPolicy: IfNotPresent
-
 service:
-  type: ClusterIP  #???
+  type: ClusterIP #???
   port: 80
-
 resources:
   limits:
     cpu: 250m
@@ -22,6 +19,5 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
-
 serviceAccount:
-  create: false    
+  create: false
