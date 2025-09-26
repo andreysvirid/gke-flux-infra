@@ -3,7 +3,7 @@ entries:
   kbot:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-09-11T19:22:59.830320908+02:00"
+    created: "2025-09-27T00:05:19.959307152+02:00"
     description: A Helm chart for Kubernetes
     digest: be75760a10dc76351ea75f46da7c71540b94e9ba695ef47642c99890d146449f
     name: kbot
@@ -11,4 +11,4 @@ entries:
     urls:
     - https://andreysvirid.github.io/gke-flux-infra/kbot-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-11T19:22:59.829982908+02:00"
+generated: "2025-09-27T00:05:19.959045246+02:00"

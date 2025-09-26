@@ -1,10 +1,8 @@
 # values.yaml - центральне місце для всіх змінних
 image:
   repository: andreysvirid/kbot2   # образ Docker
-  tag: "v1.0.0-8557bd9"           # тег образу, оновлюється у Git
+  tag: "v1.0.0-610715b"           # тег образу, оновлюється у Git
 
-#env:
-#  TELEGRAM_TOKEN: "7957704809:AAHq3Supo-FS4o1q8pqydBvdXY4GGwO3zeQ"
 
 service:
   port: 80
