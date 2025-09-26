@@ -1,20 +1,14 @@
-# values.yaml
+# values.yaml - центральне місце для всіх змінних
 image:
   repository: andreysvirid/kbot2
   tag: "v1.0.0-610715b"
 
 service:
-  type: ClusterIP
+  type: ClusterIP   # додаємо тип сервісу
   port: 80
-
-ingress:
-  enabled: false
 
 serviceAccount:
   create: false
-
-autoscaling:
-  enabled: false
 
 env:
   - name: TELEGRAM_TOKEN

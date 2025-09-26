@@ -5,6 +5,8 @@ metadata:
   namespace: demo-helm
 spec:
   interval: 1m
+  install:
+    timeout: 10m
   chart:
     spec:
       chart: kbot

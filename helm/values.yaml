@@ -1,11 +1,18 @@
 # values.yaml - центральне місце для всіх змінних
 image:
-  repository: andreysvirid/kbot2   # образ Docker
-  tag: "v1.0.0-610715b"           # тег образу, оновлюється у Git
+  repository: andreysvirid/kbot2
+  tag: "v1.0.0-610715b"
 
-#env:
-#  - name: TELEGRAM_TOKEN           # змінна для контейнера
-#    valueFrom:
-#      secretKeyRef:
-#        name: telegram-token      # ім'я Kubernetes Secret (нижній регістр)
-#        key: token                # ключ у Secret
+service:
+  type: ClusterIP   # додаємо тип сервісу
+  port: 80
+
+serviceAccount:
+  create: false
+
+env:
+  - name: TELEGRAM_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: telegram-token
+        key: token

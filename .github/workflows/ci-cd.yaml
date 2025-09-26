@@ -79,7 +79,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add flux/charts/kbot/values.yaml
+          git add kbot/values.yaml
           git commit -m "ci: update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB2_TOKEN }}@github.com/andreysvirid/gke-flux-infra.git
           git push origin develop
