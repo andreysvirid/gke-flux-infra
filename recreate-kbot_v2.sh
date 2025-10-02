@@ -47,7 +47,7 @@ flux create hr $HR_NAME \
   --namespace=$NAMESPACE \
   --chart=./kbot \
   --source=GitRepository/$GIT_SOURCE \
-  --values=./kbot/values.yaml \
+#  --values=./kbot/values.yaml \
   --interval=1m
 
 echo ""
