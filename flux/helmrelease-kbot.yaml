@@ -10,8 +10,7 @@ spec:
       chart: ./kbot
       sourceRef:
         kind: GitRepository
-        name: kbot-repo
-        namespace: flux-system
+        name: kbot-repo  # теперь GitRepository в том же namespace
       version: "*"
   install:
     timeout: 5m
