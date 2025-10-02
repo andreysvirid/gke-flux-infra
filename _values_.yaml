@@ -1,7 +1,7 @@
 # values.yaml - центральне місце для всіх змінних
 image:
   repository: andreysvirid/kbot2
-  tag: "v1.0.0-610715b"
+  tag: "v1.0.0-f34e424" #tag: "v1.0.0-610715b"
 
 service:
   type: ClusterIP   # додаємо тип сервісу

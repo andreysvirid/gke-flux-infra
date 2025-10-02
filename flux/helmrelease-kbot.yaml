@@ -5,29 +5,19 @@ metadata:
   namespace: demo-helm
 spec:
   interval: 1m
-  install:
-    timeout: 10m
   chart:
     spec:
-      chart: kbot
+      chart: ./kbot
       sourceRef:
         kind: GitRepository
         name: kbot-repo
         namespace: flux-system
       version: "*"
+  install:
+    timeout: 5m
+  upgrade:
+    timeout: 5m
   values:
-    image:
-      repository: andreysvirid/kbot2
-      tag: "v1.0.4"
-    service:
-      type: ClusterIP
-      port: 80
-    serviceAccount:
-      create: false
-    ingress:
-      enabled: false
-    autoscaling:
-      enabled: false
     env:
       - name: TELEGRAM_TOKEN
         valueFrom:
