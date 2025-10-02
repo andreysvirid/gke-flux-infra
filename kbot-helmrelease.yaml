@@ -1,0 +1,18 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kbot
+  namespace: demo-helm
+spec:
+  interval: 1m
+  chart:
+    spec:
+      chart: ./kbot
+      sourceRef:
+        kind: GitRepository
+        name: kbot-repo
+      version: "*"
+      # reconcileStrategy можно "ChartVersion" или "Revision"
+      reconcileStrategy: ChartVersion
+  values:
+    # сюда можно добавить значения, которые не меняются
